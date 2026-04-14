@@ -103,7 +103,7 @@ spotless {
 
 | Item | CheckMate Current | This Template Adds |
 |------|------------------|--------------------|
-| Spring Boot version | 3.5.13 (Java 17) | 3.3.6 (Java 21 LTS) — newer LTS |
+| Spring Boot version | 3.5.13 (Java 17) | 3.3.6 (Java 17 LTS) — same LTS baseline |
 | Build DSL | Groovy DSL | **Kotlin DSL** (type-safe, IDE completion) |
 | Formatter | Spotless + googleJavaFormat | **spring-java-format** (Spring-official) |
 | Checkstyle | ✅ Present (10.25.0) | Present (10.17.0) + suppressions.xml |
@@ -111,7 +111,7 @@ spotless {
 | ArchUnit | ✅ Present (1.4.0) | **6-rule set** (Layered + Entity isolation + DTO boundary + Transaction + Naming + multi-module prep) |
 | springdoc-openapi | NOT FOUND | **Added** (2.5.0) — /swagger-ui.html + /api-docs |
 | Commitlint (CI) | NOT FOUND | **`wagoid/commitlint-github-action@v6`** + `.commitlintrc.json` |
-| Dockerfile (multi-stage) | NOT FOUND | **Multi-stage** (JDK 21 build → JRE 21 runtime, layered jar) |
+| Dockerfile (multi-stage) | NOT FOUND | **Multi-stage** (JDK 17 build → JRE 17 runtime, layered jar) |
 | ECS task-definition.json | NOT FOUND | **`aws/task-definition.json`** template (Fargate CPU256/Mem512) |
 | AppProperties record | NOT FOUND | **`examples/config/AppProperties.java`** — @ConfigurationProperties pattern |
 | CI `fetch-depth: 0` | NOT SET | ✅ Set (commitlint requirement) |

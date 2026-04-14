@@ -59,9 +59,9 @@ All `{{...}}` placeholders below must be filled before execution:
 
 ```bash
 gh auth status || exit 1
-java -version 2>&1 | grep -qE '"21\.' || {
-  echo "WARNING: JDK 21 required."
-  echo "Install: sdk install java 21.0.5-tem   # or brew install temurin@21"
+java -version 2>&1 | grep -qE '"17\.' || {
+  echo "WARNING: JDK 17 required."
+  echo "Install: sdk install java 17.0.13-tem   # or brew install temurin@17"
   exit 1
 }
 mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
@@ -181,7 +181,7 @@ Also copy `examples/.commitlintrc.json` → `.commitlintrc.json`
 The CI pipeline runs (in order, fail-fast):
 1. `actions/checkout@v4` with `fetch-depth: 0`
 2. `wagoid/commitlint-github-action@v6`
-3. `actions/setup-java@v4` (Temurin 21)
+3. `actions/setup-java@v4` (Temurin 17)
 4. `gradle/actions/setup-gradle@v4`
 5. `./gradlew checkFormat`
 6. `./gradlew checkstyleMain checkstyleTest`
@@ -266,7 +266,7 @@ as complete to the human.
 
 | 증상 | 원인 | 해결 |
 |------|------|------|
-| `java -version` 21 미인식 | JDK 17/11이 PATH 우선 | `sdk use java 21.x-tem` 또는 JAVA_HOME 재설정 |
+| `java -version` 17 미인식 | JDK 11/8이 PATH 우선 | `sdk use java 17.x-tem` 또는 JAVA_HOME 재설정 |
 | `./gradlew: Permission denied` | gradlew 실행 권한 없음 | `chmod +x gradlew` |
 | `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew applyFormat`으로 자동 수정 후 재검증 |
 | SpotBugs NullPointerException false positive | Spring 의존성 주입 패턴 미인식 | `spotbugs/spotbugs-exclude.xml`에 `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` 추가 |
@@ -277,7 +277,7 @@ as complete to the human.
 ## 13. Essential Checklist
 
 - [ ] `gh auth status` passed
-- [ ] JDK 21 version verified
+- [ ] JDK 17 version verified
 - [ ] Spring Initializr command ran in an empty or newly-created directory
 - [ ] All config files written (checkstyle, spotbugs, archunit, Dockerfile, etc.)
 - [ ] `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build` passes locally
@@ -308,7 +308,7 @@ as complete to the human.
 | actions/setup-java | v4 | CI |
 | gradle/actions/setup-gradle | v4 | CI Gradle cache |
 | postgres (Docker) | 16-alpine | docker-compose |
-| eclipse-temurin (Docker) | 21-jdk-alpine / 21-jre-alpine | Dockerfile |
+| eclipse-temurin (Docker) | 17-jdk-alpine / 17-jre-alpine | Dockerfile |
 
 > **Spring Boot version check:** `curl -s https://start.spring.io/actuator/info | jq -r '.bom["spring-boot"].version'`
 
@@ -325,7 +325,7 @@ See `examples/` directory for all ready-to-copy config files:
 - `examples/.springjavaformatconfig` — spring-java-format activation file
 - `examples/application.yml` — production config (open-in-view=false, show-sql=false)
 - `examples/application-local.yml` — local docker-compose DB config
-- `examples/Dockerfile` — multi-stage JDK21/JRE21 layered jar
+- `examples/Dockerfile` — multi-stage JDK17/JRE17 layered jar
 - `examples/.dockerignore` — exclude .git, .gradle, build, .claude
 - `examples/docker-compose.yml` — Postgres 16 + optional Redis
 - `examples/aws/task-definition.json` — ECS Fargate CPU256/Mem512 template

@@ -1,6 +1,6 @@
 # Architecture Rules — Java / Spring Boot
 
-> Concrete module boundary and export conventions for Spring Boot 3 + Java 21.
+> Concrete module boundary and export conventions for Spring Boot 3 + Java 17.
 
 ## Required Content per Language Template
 

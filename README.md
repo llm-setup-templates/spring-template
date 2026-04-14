@@ -9,7 +9,7 @@
 
 ## Why this template exists
 
-Spring Boot 3 + Java 21 + Gradle Kotlin DSL is the 2026 production baseline,
+Spring Boot 3 + Java 17 + Gradle Kotlin DSL is the 2026 production baseline,
 yet most team starters omit ArchUnit, SpotBugs, and CodeRabbit — leaving
 architecture drift undetected until code review. This template wires all
 four static analysis tools (spring-java-format / Checkstyle / SpotBugs /
@@ -72,9 +72,9 @@ Reference: [team-dodn/spring-boot-java-template](https://github.com/team-dodn/sp
 ## Phase Overview (14 sections in SETUP.md)
 
 1. Preface + LLM meta-instructions + Placeholder Index
-2. Prerequisites (gh, git, JDK 21, curl, Docker)
+2. Prerequisites (gh, git, JDK 17, curl, Docker)
 3. Phase 0 — Repo Init (gh repo create)
-4. Phase 1 — Spring Initializr (Gradle Kotlin DSL, Java 21)
+4. Phase 1 — Spring Initializr (Gradle Kotlin DSL, Java 17)
 5. Phase 2 — DevDeps (Checkstyle, SpotBugs, spring-java-format, springdoc, ArchUnit, Testcontainers)
 6. Phase 3 — Config Files (checkstyle.xml, Dockerfile, docker-compose.yml, AppProperties.java, etc.)
 7. Phase 4 — Gradle Tasks verification
