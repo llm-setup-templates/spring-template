@@ -1,10 +1,10 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.6"
-    id("io.spring.dependency-management") version "1.1.6"
+    id("org.springframework.boot") version "3.5.0"
+    id("io.spring.dependency-management") version "1.1.7"
     id("checkstyle")
     id("com.github.spotbugs") version "6.0.26"
-    id("io.spring.javaformat") version "0.0.43"
+    id("io.spring.javaformat") version "0.0.47"
 }
 
 group = "com.example"
@@ -29,7 +29,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testRuntimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.4.0")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
@@ -39,6 +39,10 @@ dependencies {
 checkstyle {
     toolVersion = "10.17.0"
     configFile = file("checkstyle/checkstyle.xml")
+    // Required so ${config_loc} in checkstyle.xml resolves to ./checkstyle/
+    // instead of Gradle's default config/checkstyle/ — otherwise the
+    // SuppressionFilter reference to suppressions.xml fails to load.
+    configDirectory.set(file("checkstyle"))
     isIgnoreFailures = false
 }
 

@@ -80,7 +80,7 @@ gh repo create {{PROJECT_NAME}} --private --source=. --remote=origin
 curl -G https://start.spring.io/starter.zip \
   -d type=gradle-project-kotlin \
   -d language=java \
-  -d bootVersion=3.3.6 \
+  -d bootVersion=3.5.0 \
   -d javaVersion=21 \
   -d groupId=com.example \
   -d artifactId={{PROJECT_NAME}} \
@@ -90,7 +90,17 @@ curl -G https://start.spring.io/starter.zip \
 unzip starter.zip
 rm starter.zip
 chmod +x gradlew
+
+# Record the exec bit in git so Linux CI runners can run ./gradlew.
+# Without this, CI fails with "./gradlew: Permission denied" (exit 126).
+git update-index --chmod=+x gradlew
 ```
+
+> **Spring Boot version note**: `start.spring.io` enforces a rolling
+> compatibility window. As of 2026-04-14 the minimum accepted is 3.5.0
+> (earlier versions return HTTP 400 `Invalid Spring Boot version,
+> compatibility range is >=3.5.0`). Check the current minimum with:
+> `curl -s https://start.spring.io/metadata/client | jq -r '.bootVersion.default'`
 
 ---
 
@@ -151,6 +161,8 @@ Copy the following files from `examples/` into your project root:
 - `examples/archunit/ArchitectureTest.java` → `src/test/java/com/example/{{PROJECT_NAME_LOWER}}/architecture/ArchitectureTest.java`
   - **Replace** `com.example` with `{{BASE_PACKAGE}}` in `@AnalyzeClasses`
   - **Replace** `com.example..` package rules with your base package
+- `examples/archunit/archunit.properties` → `src/test/resources/archunit.properties`
+  - Required for the day-0 skeleton: ArchUnit 1.4+ fails empty-should rules by default
 - `examples/.springjavaformatconfig` → `.springjavaformatconfig`
 - `examples/application.yml` → `src/main/resources/application.yml`
 - `examples/application-local.yml` → `src/main/resources/application-local.yml`
@@ -253,7 +265,13 @@ git diff --quiet && git diff --cached --quiet || {
 
 ### 11.2 Push + watch CI
 
+CI triggers on `push: [main, dev]` and on `pull_request: [main, dev]`. On a
+brand-new repo created via `gh repo create --source=. --remote=origin`, the
+remote has no `main` yet. Seed `main` by pushing the feature-branch commit
+directly into `main` on first push:
+
 ```bash
+git push origin $(git rev-parse --abbrev-ref HEAD):main
 git push -u origin $(git rev-parse --abbrev-ref HEAD)
 gh run watch
 ```
@@ -271,7 +289,15 @@ as complete to the human.
 |------|------|------|
 | `java -version` 17 미인식 | JDK 11/8이 PATH 우선 | Gradle toolchain이 자동 다운로드하므로 그대로 진행 가능. 빠른 첫 빌드를 원하면 `sdk use java 17.x-tem` 또는 JAVA_HOME 재설정 |
 | Gradle toolchain 다운로드 실패 (Foojay API 접근 불가) | 방화벽/프록시 차단 | `~/.gradle/gradle.properties`에 프록시 설정 추가 또는 로컬 JDK 17 직접 설치 |
-| `./gradlew: Permission denied` | gradlew 실행 권한 없음 | `chmod +x gradlew` |
+| `./gradlew: Permission denied` (CI 126) | Windows git 이 gradlew 실행 권한 미추적 | `git update-index --chmod=+x gradlew && git commit` — `chmod +x` 만으로는 부족 (Windows 로컬에서 커밋하면 권한 손실) |
+| `checkFormat` 가 변경 없이 계속 실패 | spring-java-format 0.0.43 + Gradle 8.14 silent format-vs-check 불일치 | 플러그인을 0.0.47 이상으로 올릴 것 (템플릿은 0.0.47 고정) |
+| `checkFormat` 실패, 원인 불명 | Java 파일에 비-ASCII Unicode (box-drawing `──`, em-dash `—` 등) | ASCII 만 사용 — Unicode 주석 제거 |
+| Checkstyle `Unable to find .../config/checkstyle/suppressions.xml` | `configDirectory` 미설정 시 Gradle 이 `config/checkstyle/` 기본값 사용 | `checkstyle { configDirectory.set(file("checkstyle")) }` 추가 |
+| `FileTabCharacter` 86+ errors | spring-java-format tab 들여쓰기 vs Google Java Style no-tab 충돌 | `suppressions.xml` 에 `<suppress checks="FileTabCharacter" files=".*\.java"/>` 추가 |
+| ArchUnit `Rule ... failed to check any classes` | 1.4+ 에서 `archRule.failOnEmptyShould=true` 가 기본 | `src/test/resources/archunit.properties` 에 `archRule.failOnEmptyShould=false` |
+| `layeredArchitecture` `Layer 'Controller' is empty` | 빈 scaffold 상태 | `Architectures.layeredArchitecture().withOptionalLayers(true)` |
+| `cannot find symbol: interfaces()` | `ArchRuleDefinition.interfaces()` 는 존재하지 않는 메서드 | `classes().that()....and().areInterfaces()` 로 교체 |
+| `start.spring.io` HTTP 400 `Invalid Spring Boot version` | 템플릿 고정 버전이 지원 범위 밖 | 최소 3.5.0 사용; `curl -s https://start.spring.io/metadata/client \| jq -r '.bootVersion.default'` 로 현재 기본값 확인 |
 | `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew applyFormat`으로 자동 수정 후 재검증 |
 | SpotBugs NullPointerException false positive | Spring 의존성 주입 패턴 미인식 | `spotbugs/spotbugs-exclude.xml`에 `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` 추가 |
 | Testcontainers `Cannot connect to Dockerd` | CI에서 Docker 미설치 | ci.yml의 ubuntu-latest는 preinstalled Docker 사용 — 로컬에서는 Docker Desktop 기동 확인 |
@@ -297,14 +323,14 @@ as complete to the human.
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Spring Boot | 3.3.6 | Scaffolding bootVersion (2026-04-14 latest 3.3.x) |
+| Spring Boot | 3.5.0 | Minimum accepted by start.spring.io as of 2026-04-14 (earlier versions return 400 `Invalid Spring Boot version, compatibility range is >=3.5.0`) |
 | Java (Temurin) | 21 | LTS, Spring Boot 3.2+ minimum |
 | Gradle wrapper | 8.10+ | build.gradle.kts compatible |
-| spring-java-format Gradle plugin | 0.0.43 | `io.spring.javaformat` |
+| spring-java-format Gradle plugin | 0.0.47 | `io.spring.javaformat` — 0.0.43 has a silent format-vs-check disagreement under Gradle 8.14 |
 | SpotBugs Gradle plugin | 6.0.26 | `com.github.spotbugs` |
 | Checkstyle toolVersion | 10.17.0 | `toolVersion` in build.gradle.kts |
 | SpotBugs toolVersion | 4.8.6 | `toolVersion` in spotbugs block |
-| ArchUnit | 1.3.0 | `com.tngtech.archunit:archunit-junit5` |
+| ArchUnit | 1.4.0 | `com.tngtech.archunit:archunit-junit5` |
 | springdoc-openapi | 2.5.0 | `springdoc-openapi-starter-webmvc-ui` |
 | Testcontainers BOM | 1.20.x | Managed via Spring Boot BOM |
 | wagoid/commitlint-github-action | v6 | CI commitlint step |
