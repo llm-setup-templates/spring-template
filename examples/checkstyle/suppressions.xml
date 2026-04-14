@@ -18,6 +18,10 @@
     <!-- spring-java-format owns trailing whitespace -->
     <suppress checks="RegexpSingleline" files=".*\.java"/>
 
+    <!-- spring-java-format uses tab indentation; Google Java Style forbids
+         tab characters. Suppress the conflict: spring-java-format wins. -->
+    <suppress checks="FileTabCharacter" files=".*\.java"/>
+
     <!-- Test files: magic numbers are acceptable in assertions -->
     <suppress checks="MagicNumber" files=".*Test\.java"/>
     <suppress checks="MagicNumber" files=".*IT\.java"/>
