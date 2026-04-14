@@ -59,10 +59,13 @@ All `{{...}}` placeholders below must be filled before execution:
 
 ```bash
 gh auth status || exit 1
+# JDK check is advisory only: settings.gradle.kts uses the
+# foojay-resolver-convention plugin, so Gradle will auto-download JDK 17
+# to ~/.gradle/jdks/ on first build regardless of the host JDK version.
+# The warning below is a soft hint for faster first-run experience.
 java -version 2>&1 | grep -qE '"17\.' || {
-  echo "WARNING: JDK 17 required."
-  echo "Install: sdk install java 17.0.13-tem   # or brew install temurin@17"
-  exit 1
+  echo "INFO: Host JDK is not 17. Gradle will auto-provision JDK 17 on first build."
+  echo "To speed up first build: sdk install java 17.0.13-tem   # or brew install temurin@17"
 }
 mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
 git init -b main
@@ -266,7 +269,8 @@ as complete to the human.
 
 | 증상 | 원인 | 해결 |
 |------|------|------|
-| `java -version` 17 미인식 | JDK 11/8이 PATH 우선 | `sdk use java 17.x-tem` 또는 JAVA_HOME 재설정 |
+| `java -version` 17 미인식 | JDK 11/8이 PATH 우선 | Gradle toolchain이 자동 다운로드하므로 그대로 진행 가능. 빠른 첫 빌드를 원하면 `sdk use java 17.x-tem` 또는 JAVA_HOME 재설정 |
+| Gradle toolchain 다운로드 실패 (Foojay API 접근 불가) | 방화벽/프록시 차단 | `~/.gradle/gradle.properties`에 프록시 설정 추가 또는 로컬 JDK 17 직접 설치 |
 | `./gradlew: Permission denied` | gradlew 실행 권한 없음 | `chmod +x gradlew` |
 | `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew applyFormat`으로 자동 수정 후 재검증 |
 | SpotBugs NullPointerException false positive | Spring 의존성 주입 패턴 미인식 | `spotbugs/spotbugs-exclude.xml`에 `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` 추가 |
@@ -277,7 +281,7 @@ as complete to the human.
 ## 13. Essential Checklist
 
 - [ ] `gh auth status` passed
-- [ ] JDK 17 version verified
+- [ ] JDK 17 available (host install OR Gradle toolchain auto-provision)
 - [ ] Spring Initializr command ran in an empty or newly-created directory
 - [ ] All config files written (checkstyle, spotbugs, archunit, Dockerfile, etc.)
 - [ ] `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build` passes locally

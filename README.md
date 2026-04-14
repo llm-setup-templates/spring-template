@@ -72,7 +72,7 @@ Reference: [team-dodn/spring-boot-java-template](https://github.com/team-dodn/sp
 ## Phase Overview (14 sections in SETUP.md)
 
 1. Preface + LLM meta-instructions + Placeholder Index
-2. Prerequisites (gh, git, JDK 17, curl, Docker)
+2. Prerequisites (gh, git, JDK 17 — auto-downloaded by Gradle if absent, curl, Docker)
 3. Phase 0 — Repo Init (gh repo create)
 4. Phase 1 — Spring Initializr (Gradle Kotlin DSL, Java 17)
 5. Phase 2 — DevDeps (Checkstyle, SpotBugs, spring-java-format, springdoc, ArchUnit, Testcontainers)

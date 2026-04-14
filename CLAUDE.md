@@ -6,7 +6,7 @@
 {{PROJECT_ONE_LINER}}
 
 ## Tech Stack
-- Language: Java 17 (LTS / Temurin)
+- Language: Java 17 (LTS / Temurin) — auto-provisioned by Gradle toolchain (Foojay resolver) so host JDK version does not matter
 - Package Manager: Gradle (Kotlin DSL 8.x)
 - Formatter: spring-java-format 0.0.43
 - Linter: Checkstyle 10.17.0 (Google Java Style) + SpotBugs 4.8.6
