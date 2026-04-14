@@ -98,10 +98,12 @@ public class ArchitectureTest {
     // When scaling to multi-module (team-dodn pattern), packages map to:
     //   com.example.core, com.example.clients, com.example.storage, com.example.support
     // Migration = Gradle settings.gradle.kts include() change + move packages.
+    // NOTE: keep .as() message on a single short line. spring-java-format may
+    // collapse multi-string concatenations into one line, and Checkstyle's
+    // 120-char limit will then fail once the package name is substituted.
     @ArchTest
     static final ArchRule packageBoundaries = classes()
         .should().resideInAPackage("com.example..")
-        .as("All classes must reside within com.example package hierarchy "
-            + "(multi-module split preparation)");
+        .as("All classes must reside within base package (multi-module split preparation)");
 
 }
