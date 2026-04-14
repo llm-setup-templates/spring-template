@@ -166,6 +166,8 @@ Copy the following files from `examples/` into your project root:
 - `examples/.springjavaformatconfig` → `.springjavaformatconfig`
 - `examples/application.yml` → `src/main/resources/application.yml`
 - `examples/application-local.yml` → `src/main/resources/application-local.yml`
+- `examples/application-test.yml` → `src/test/resources/application.yml`
+  - Required: spring init's default `*ApplicationTests.contextLoads` test loads the full Spring context, but the production `application.yml` configures a Postgres datasource that is unavailable on a clean local checkout. The H2 in-memory profile keeps the day-0 verify hands-off.
 - `examples/Dockerfile` → `Dockerfile`
 - `examples/.dockerignore` → `.dockerignore`
 - `examples/docker-compose.yml` → `docker-compose.yml`
