@@ -1,0 +1,53 @@
+{
+  "family": "{{PROJECT_NAME}}",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc",
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "{{TASK_EXECUTION_ROLE_ARN}}",
+  "taskRoleArn": "{{TASK_ROLE_ARN}}",
+  "containerDefinitions": [
+    {
+      "name": "{{PROJECT_NAME}}-api",
+      "image": "{{AWS_ACCOUNT_ID}}.dkr.ecr.{{AWS_REGION}}.amazonaws.com/{{PROJECT_NAME}}:latest",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "prod" },
+        { "name": "DB_HOST", "value": "{{RDS_ENDPOINT}}" },
+        { "name": "DB_PORT", "value": "5432" },
+        { "name": "DB_NAME", "value": "{{DB_NAME}}" }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USER",
+          "valueFrom": "{{SECRET_ARN_DB_USER}}"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "{{SECRET_ARN_DB_PASSWORD}}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/{{PROJECT_NAME}}",
+          "awslogs-region": "{{AWS_REGION}}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}

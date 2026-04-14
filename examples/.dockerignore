@@ -1,0 +1,13 @@
+.git/
+.gradle/
+build/
+.gitignore
+**/*.md
+Dockerfile
+docker-compose.yml
+.github/
+.claude/
+examples/
+*.bat
+*.sh
+CHECKMATE-BACKEND-AUDIT.md

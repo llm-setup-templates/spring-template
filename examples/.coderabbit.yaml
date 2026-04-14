@@ -1,0 +1,37 @@
+reviews:
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "[WIP]"
+      - "[SKIP CI]"
+  path_instructions:
+    - path: "**/*.java"
+      instructions: |
+        Review focus (priority order):
+        1. Architecture violations: A controller must not depend on a repository
+           directly. Entities from `..domain..` must not leak into
+           `..controller..` — flag any Controller that returns a JPA entity
+           instead of a DTO.
+        2. Transaction boundaries: `@Transactional` must only appear in
+           `..service..`. Flag any placement outside that package.
+        3. N+1 query patterns: Flag JPA associations without `@EntityGraph`
+           or `JOIN FETCH` when iterated in a loop.
+        4. DTO / Entity separation: DTOs must not carry `@Entity`, `@Table`,
+           or any JPA annotations. Entities must not be serialized directly
+           to HTTP responses.
+        5. Import/export conventions: Spring packages should import from
+           their own layer or layers below (Controller may import Service,
+           Service may import Repository — never the reverse). Flag any
+           circular dependency.
+        6. Naming: Classes must match their layer suffix (`*Controller`,
+           `*Service`/`*UseCase`, `*Repository`). Reject deviations.
+        7. Do NOT comment on formatting — Checkstyle + spring-java-format
+           own that domain.
+    - path: "src/test/**/*.java"
+      instructions: |
+        1. ArchitectureTest.java must not be disabled or have rules
+           commented out.
+        2. Integration tests using Testcontainers must reset state
+           between tests (`@DirtiesContext` or explicit cleanup).
+        3. Mockito stubs on unused methods = flag (strict stubbing).
+  ignore_formatting: true
