@@ -25,6 +25,9 @@ After any code change, the agent MUST run the verification loop:
 
 Execution order is fail-fast: stop at the first failure.
 
+If the **test** step fails, consult `.claude/rules/test-modification.md` to determine
+which tests need updating based on the code change type, then re-run the loop.
+
 ## Agent Self-Verification Rules
 1. Never declare a task complete until the full loop passes.
 2. If a step fails, fix the root cause — do not bypass with `--no-verify`,

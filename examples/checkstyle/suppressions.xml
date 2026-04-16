@@ -9,7 +9,7 @@
 -->
 <suppressions>
 
-    <!-- spring-java-format owns import ordering — disable Checkstyle rule -->
+    <!-- spring-java-format owns import ordering  - disable Checkstyle rule -->
     <suppress checks="ImportOrder" files=".*\.java"/>
 
     <!-- spring-java-format owns newline at end of file -->
