@@ -93,6 +93,8 @@ chmod +x gradlew
 
 # Record the exec bit in git so Linux CI runners can run ./gradlew.
 # Without this, CI fails with "./gradlew: Permission denied" (exit 126).
+# On Windows, the file must be staged before update-index can set the bit.
+git add gradlew
 git update-index --chmod=+x gradlew
 ```
 
@@ -174,6 +176,8 @@ Copy the following files from `examples/` into your project root:
 - `examples/aws/task-definition.json` → `aws/task-definition.json`
   - Fill all `{{...}}` placeholders with your AWS values
 - `examples/config/AppProperties.java` → `src/main/java/com/example/{{PROJECT_NAME_LOWER}}/config/AppProperties.java`
+  - **Fix package declaration**: the template file uses `com.example.config`; replace `com.example` with your actual base package:
+    `sed -i 's/^package com\.example/package com.example.{{PROJECT_NAME_LOWER}}/' src/main/java/.../AppProperties.java`
   - Add `@EnableConfigurationProperties(AppProperties.class)` to your main `*Application.java`
 
 ---
@@ -182,10 +186,10 @@ Copy the following files from `examples/` into your project root:
 
 Verify these tasks are available after Phase 2:
 ```bash
-./gradlew tasks | grep -E "checkFormat|applyFormat|checkstyleMain|spotbugsMain|bootJar"
+./gradlew tasks | grep -E "checkFormat|format|checkstyleMain|spotbugsMain|bootJar"
 ```
 
-Expected output includes: `checkFormat`, `applyFormat`, `checkstyleMain`, `checkstyleTest`, `spotbugsMain`, `bootJar`
+Expected output includes: `checkFormat`, `format`, `checkstyleMain`, `checkstyleTest`, `spotbugsMain`, `bootJar`
 
 ---
 
@@ -311,7 +315,7 @@ as complete to the human.
 | `layeredArchitecture` `Layer 'Controller' is empty` | 빈 scaffold 상태 | `Architectures.layeredArchitecture().withOptionalLayers(true)` |
 | `cannot find symbol: interfaces()` | `ArchRuleDefinition.interfaces()` 는 존재하지 않는 메서드 | `classes().that()....and().areInterfaces()` 로 교체 |
 | `start.spring.io` HTTP 400 `Invalid Spring Boot version` | 템플릿 고정 버전이 지원 범위 밖 | 최소 3.5.0 사용; `curl -s https://start.spring.io/metadata/client \| jq -r '.bootVersion.default'` 로 현재 기본값 확인 |
-| `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew applyFormat`으로 자동 수정 후 재검증 |
+| `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew format`으로 자동 수정 후 재검증 |
 | SpotBugs NullPointerException false positive | Spring 의존성 주입 패턴 미인식 | `spotbugs/spotbugs-exclude.xml`에 `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` 추가 |
 | Testcontainers `Cannot connect to Dockerd` | CI에서 Docker 미설치 | ci.yml의 ubuntu-latest는 preinstalled Docker 사용 — 로컬에서는 Docker Desktop 기동 확인 |
 
