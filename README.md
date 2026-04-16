@@ -97,5 +97,25 @@ Reference: [team-dodn/spring-boot-java-template](https://github.com/team-dodn/sp
 | CodeRabbit | PR review (7 Spring-specific items) | Automatic on every PR |
 | commitlint | Conventional Commits on PR | `wagoid/commitlint-github-action@v6` in CI |
 
+## Scaling to Multi-Module
+
+This template uses single-module structure with package names pre-aligned to the
+team-dodn multi-module pattern. When your project grows:
+
+| Package | → Gradle Module | Responsibility |
+|---------|----------------|----------------|
+| `core.api.*` | `core:core-api` | REST controllers, config, the only bootJar-enabled module |
+| `core.domain.*` | `core:core-api` | Business logic, domain objects |
+| `core.enums.*` | `core:core-enum` | Shared enums exposed to external modules |
+| `storage.db.*` | `storage:db-core` | JPA entities, repositories, datasource config |
+| `clients.*` | `clients:client-*` | External API integrations |
+| `support.*` | `support:logging`, `support:monitoring` | Cross-cutting concerns |
+
+Migration steps:
+1. Create `settings.gradle.kts` with `include("core:core-api", "storage:db-core", ...)`
+2. Move packages to submodule `src/` directories
+3. Add inter-module `implementation(project(...))` dependencies
+4. ArchUnit rules carry over unchanged
+
 ## License
 Apache-2.0

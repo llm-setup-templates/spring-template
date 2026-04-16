@@ -106,4 +106,32 @@ public class ArchitectureTest {
         .should().resideInAPackage("com.example..")
         .as("All classes must reside within base package (multi-module split preparation)");
 
+    // NOTE: Rule 1 (layeredArchitecture) uses the original flat package names.
+    // Under team-dodn layout, Rule 1 becomes a silent no-op.
+    // Rules 7–10 provide actual enforcement for the new structure.
+
+    @ArchTest
+    static final ArchRule domain_does_not_access_storage =
+        noClasses().that().resideInAPackage("..core.domain..")
+            .should().accessClassesThat().resideInAPackage("..storage..")
+            .as("domain no storage access");
+
+    @ArchTest
+    static final ArchRule domain_does_not_use_jpa =
+        noClasses().that().resideInAPackage("..core.domain..")
+            .should().dependOnClassesThat().resideInAPackage("jakarta.persistence..")
+            .as("domain no JPA dependency");
+
+    @ArchTest
+    static final ArchRule storage_does_not_access_clients =
+        noClasses().that().resideInAPackage("..storage..")
+            .should().accessClassesThat().resideInAPackage("..clients..")
+            .as("storage no client access");
+
+    @ArchTest
+    static final ArchRule clients_does_not_access_storage =
+        noClasses().that().resideInAPackage("..clients..")
+            .should().accessClassesThat().resideInAPackage("..storage..")
+            .as("client no storage access");
+
 }

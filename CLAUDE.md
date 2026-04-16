@@ -26,7 +26,7 @@
 
 ## Architecture Summary
 See `.claude/rules/architecture.md` for full rules.
-This project uses a 3-layer Spring Boot architecture (Controller → Service → Repository) enforced by ArchUnit (6 rules) running as part of `./gradlew test`. All classes live within `com.example.*` from day one, matching the package boundaries needed for a future multi-module split (team-dodn pattern: core/clients/storage/support). DTOs must never carry JPA annotations; domain entities must never be returned directly from controllers.
+This project uses a layered Spring Boot architecture with **team-dodn package naming** for future multi-module migration. Packages: `core.api` (controllers), `core.domain` (business logic), `storage.db` (JPA persistence), `clients` (external APIs), `support` (cross-cutting: error handling, logging). All API responses are wrapped in `ApiResponse<T>` with standardized `ErrorCode` enums. Global exception handling via `@ControllerAdvice` converts `CoreException` to `ApiResponse`. ArchUnit enforces 10 boundary rules at test time. See `.claude/rules/architecture.md` for full rules.
 
 ## Verification Rules
 After any code change, run the full verification loop.
