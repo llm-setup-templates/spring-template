@@ -33,6 +33,19 @@ After any code change, run the full verification loop.
 Never declare a task complete until it passes.
 See `.claude/rules/verification-loop.md`.
 
+## Test Modification
+
+When modifying code, always update tests in the same commit. Determine affected test layers:
+
+- **Endpoint/service added** → create unit test (`@Mock`) + integration test (`@WebMvcTest` or `@SpringBootTest`)
+- **Signature/schema changed** → update existing assertions and mocks
+- **Logic modified** → update assertions, add edge cases
+- **Dependency bumped** → run full `./gradlew test`, check for API changes
+- **Refactoring only** → do NOT touch tests; if they break, the refactoring is wrong
+- **ArchUnit fails** → fix the code, never the rule
+
+Full rules and checklist: `.claude/rules/test-modification.md`
+
 ## Git Workflow
 - Never commit directly to `main`
 - Conventional Commits required
