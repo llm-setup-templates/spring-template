@@ -4,7 +4,7 @@
   "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <!--
-  Google Java Style — adapted for Spring Boot projects.
+  Google Java Style  - adapted for Spring Boot projects.
   ImportOrder and trailing-whitespace rules are suppressed here
   because spring-java-format owns those concerns.
   See suppressions.xml for the full suppression list.
@@ -59,7 +59,7 @@
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
         </module>
 
-        <!-- Import order — spring-java-format owns this, suppressed below -->
+        <!-- Import order  - spring-java-format owns this, suppressed below -->
         <module name="ImportOrder">
             <property name="option" value="top"/>
             <property name="groups" value="java,javax,jakarta,org,com"/>
