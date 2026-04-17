@@ -49,7 +49,8 @@ All `{{...}}` placeholders below must be filled before execution:
 ## 2. Prerequisites
 - `gh` CLI authenticated (`gh auth status`)
 - `git` ≥ 2.40
-- JDK ≥ 21 (Temurin recommended)
+- JDK ≥ 17 (Temurin recommended). Gradle toolchain auto-provisions
+  JDK 17 via the Foojay resolver, so the host JDK version is advisory
 - `curl`, `unzip` available
 - Docker Desktop running (for Testcontainers + local DB)
 
@@ -81,7 +82,7 @@ curl -G https://start.spring.io/starter.zip \
   -d type=gradle-project-kotlin \
   -d language=java \
   -d bootVersion=3.5.0 \
-  -d javaVersion=21 \
+  -d javaVersion=17 \
   -d groupId=com.example \
   -d artifactId={{PROJECT_NAME}} \
   -d packageName=com.example.{{PROJECT_NAME_LOWER}} \
@@ -116,7 +117,7 @@ Key additions to the generated file:
 ```kotlin
 id("checkstyle")
 id("com.github.spotbugs") version "6.0.26"
-id("io.spring.javaformat") version "0.0.43"
+id("io.spring.javaformat") version "0.0.47"
 ```
 
 **dependencies block — add these:**
@@ -302,22 +303,22 @@ as complete to the human.
 
 ## 12. Troubleshooting
 
-| 증상 | 원인 | 해결 |
-|------|------|------|
-| `java -version` 17 미인식 | JDK 11/8이 PATH 우선 | Gradle toolchain이 자동 다운로드하므로 그대로 진행 가능. 빠른 첫 빌드를 원하면 `sdk use java 17.x-tem` 또는 JAVA_HOME 재설정 |
-| Gradle toolchain 다운로드 실패 (Foojay API 접근 불가) | 방화벽/프록시 차단 | `~/.gradle/gradle.properties`에 프록시 설정 추가 또는 로컬 JDK 17 직접 설치 |
-| `./gradlew: Permission denied` (CI 126) | Windows git 이 gradlew 실행 권한 미추적 | `git update-index --chmod=+x gradlew && git commit` — `chmod +x` 만으로는 부족 (Windows 로컬에서 커밋하면 권한 손실) |
-| `checkFormat` 가 변경 없이 계속 실패 | spring-java-format 0.0.43 + Gradle 8.14 silent format-vs-check 불일치 | 플러그인을 0.0.47 이상으로 올릴 것 (템플릿은 0.0.47 고정) |
-| `checkFormat` 실패, 원인 불명 | Java 파일에 비-ASCII Unicode (box-drawing `──`, em-dash `—` 등) | ASCII 만 사용 — Unicode 주석 제거 |
-| Checkstyle `Unable to find .../config/checkstyle/suppressions.xml` | `configDirectory` 미설정 시 Gradle 이 `config/checkstyle/` 기본값 사용 | `checkstyle { configDirectory.set(file("checkstyle")) }` 추가 |
-| `FileTabCharacter` 86+ errors | spring-java-format tab 들여쓰기 vs Google Java Style no-tab 충돌 | `suppressions.xml` 에 `<suppress checks="FileTabCharacter" files=".*\.java"/>` 추가 |
-| ArchUnit `Rule ... failed to check any classes` | 1.4+ 에서 `archRule.failOnEmptyShould=true` 가 기본 | `src/test/resources/archunit.properties` 에 `archRule.failOnEmptyShould=false` |
-| `layeredArchitecture` `Layer 'Controller' is empty` | 빈 scaffold 상태 | `Architectures.layeredArchitecture().withOptionalLayers(true)` |
-| `cannot find symbol: interfaces()` | `ArchRuleDefinition.interfaces()` 는 존재하지 않는 메서드 | `classes().that()....and().areInterfaces()` 로 교체 |
-| `start.spring.io` HTTP 400 `Invalid Spring Boot version` | 템플릿 고정 버전이 지원 범위 밖 | 최소 3.5.0 사용; `curl -s https://start.spring.io/metadata/client \| jq -r '.bootVersion.default'` 로 현재 기본값 확인 |
-| `checkFormat` 실패 (import 순서) | spring-java-format ImportOrder 충돌 | `./gradlew format`으로 자동 수정 후 재검증 |
-| SpotBugs NullPointerException false positive | Spring 의존성 주입 패턴 미인식 | `spotbugs/spotbugs-exclude.xml`에 `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` 추가 |
-| Testcontainers `Cannot connect to Dockerd` | CI에서 Docker 미설치 | ci.yml의 ubuntu-latest는 preinstalled Docker 사용 — 로컬에서는 Docker Desktop 기동 확인 |
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `java -version` doesn't show 17 | JDK 11/8 is first on PATH | Proceed as-is — Gradle toolchain will auto-download JDK 17. For faster first build: `sdk use java 17.x-tem` or reset `JAVA_HOME` |
+| Gradle toolchain download fails (Foojay API unreachable) | Corporate firewall / proxy | Configure the proxy in `~/.gradle/gradle.properties`, or install JDK 17 locally |
+| `./gradlew: Permission denied` (CI exits 126) | Windows git did not track the gradlew exec bit | Run `git update-index --chmod=+x gradlew && git commit` — `chmod +x` alone is not enough (Windows drops the bit on commit) |
+| `checkFormat` keeps failing with no diff | Silent format-vs-check disagreement between spring-java-format 0.0.43 and Gradle 8.14 | Pin the plugin to 0.0.47 or later (this template pins 0.0.47) |
+| `checkFormat` fails, reason unclear | Non-ASCII Unicode in Java files (box-drawing `──`, em-dash `—`) | ASCII-only in source; remove Unicode from comments |
+| Checkstyle error: `Unable to find .../config/checkstyle/suppressions.xml` | `configDirectory` unset — Gradle defaults to `config/checkstyle/` | Add `checkstyle { configDirectory.set(file("checkstyle")) }` |
+| `FileTabCharacter` 86+ errors | spring-java-format tab indentation vs Google Java Style no-tab conflict | Add `<suppress checks="FileTabCharacter" files=".*\.java"/>` to `suppressions.xml` |
+| ArchUnit: `Rule ... failed to check any classes` | ArchUnit 1.4+ defaults `archRule.failOnEmptyShould=true` | Set `archRule.failOnEmptyShould=false` in `src/test/resources/archunit.properties` |
+| `layeredArchitecture` error: `Layer 'Controller' is empty` | Empty day-0 scaffold | Use `Architectures.layeredArchitecture().withOptionalLayers(true)` |
+| `cannot find symbol: interfaces()` | `ArchRuleDefinition.interfaces()` does not exist | Replace with `classes().that()....and().areInterfaces()` |
+| `start.spring.io` HTTP 400 `Invalid Spring Boot version` | Template's pinned version is outside the supported window | Use 3.5.0 or newer; verify the current floor with `curl -s https://start.spring.io/metadata/client \| jq -r '.bootVersion.default'` |
+| `checkFormat` fails on import order | spring-java-format ImportOrder conflict | `./gradlew format` to auto-fix, then re-verify |
+| SpotBugs NullPointerException false positive | Spring's DI pattern not recognized by the analyzer | Add `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` to `spotbugs/spotbugs-exclude.xml` |
+| Testcontainers: `Cannot connect to Dockerd` | Docker not available | CI's `ubuntu-latest` image has Docker preinstalled. Locally, ensure Docker Desktop is running |
 
 ---
 
@@ -341,7 +342,7 @@ as complete to the human.
 | Library | Version | Purpose |
 |---------|---------|---------|
 | Spring Boot | 3.5.0 | Minimum accepted by start.spring.io as of 2026-04-14 (earlier versions return 400 `Invalid Spring Boot version, compatibility range is >=3.5.0`) |
-| Java (Temurin) | 21 | LTS, Spring Boot 3.2+ minimum |
+| Java (Temurin) | 17 | Spring Boot 3.2+ baseline. Gradle toolchain auto-provisions via Foojay; host JDK version does not matter |
 | Gradle wrapper | 8.10+ | build.gradle.kts compatible |
 | spring-java-format Gradle plugin | 0.0.47 | `io.spring.javaformat` — 0.0.43 has a silent format-vs-check disagreement under Gradle 8.14 |
 | SpotBugs Gradle plugin | 6.0.26 | `com.github.spotbugs` |

@@ -68,7 +68,6 @@ REQUIRED_FILES=(
   "SETUP.md"
   "CLAUDE.md"
   "README.md"
-  "CHECKMATE-BACKEND-AUDIT.md"
   ".claude/rules/code-style.md"
   ".claude/rules/architecture.md"
   ".claude/rules/git-workflow.md"
