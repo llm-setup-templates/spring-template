@@ -1,0 +1,76 @@
+name: 📜 Architecture Decision Record
+description: Propose a new ADR (starts in Proposed state — merging to main flips it to Accepted)
+title: "ADR-NNN: "
+labels: [adr, proposed]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ADRs capture **final** architectural decisions with context and trade-offs.
+        - Not yet final / still debating → open an **RFC** issue instead
+        - See `.claude/rules/documentation.md` §ADR/RFC lifecycle for the full workflow
+
+  - type: input
+    id: adr-number
+    attributes:
+      label: ADR number
+      description: Next unused number in docs/architecture/decisions/
+      placeholder: "ADR-011"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What is the problem and what constraints apply? Cite specific code / dates / incidents.
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision
+      description: One or two sentences, in plain language, stating what was decided.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: List each rejected option with the single strongest reason it was rejected.
+      value: |
+        ### Option A:
+        Rejected because …
+
+        ### Option B:
+        Rejected because …
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: Consequences
+      description: What becomes easier? What becomes harder? What is the technical debt we're taking on?
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-impact
+    attributes:
+      label: Business impact (cost / risk / velocity)
+      description: Translate the technical decision into business terms. Quantify if you can.
+      value: |
+        **Cost**:
+        **Risk**:
+        **Velocity impact**:
+
+  - type: checkboxes
+    id: workflow
+    attributes:
+      label: Workflow
+      options:
+        - label: I will open this as a Draft PR adding docs/architecture/decisions/ADR-NNN-<slug>.md
+          required: true
+        - label: I will set `Status: Proposed` in the file front matter, and flip it to `Accepted` only when the PR merges
+          required: true

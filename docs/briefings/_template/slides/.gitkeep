@@ -1,0 +1,7 @@
+# Rendered slide output goes here.
+#
+# Keep slides as local files (.html, .pdf, .pptx) inside this folder.
+# Do not hotlink to external URLs that could move or break.
+#
+# If using the slides-grab skill chain:
+#   slides-grab export --slides-dir docs/briefings/YYYY-MM-DD-<slug>/slides/ --format pdf

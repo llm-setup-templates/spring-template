@@ -1,0 +1,67 @@
+name: 🐛 Bug
+description: Something that's broken, reproducible, and needs a fix
+title: "fix(<scope>): "
+labels: [bug]
+body:
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: What actually happened? Include error messages verbatim.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Minimal steps. If a fixture is needed, link it.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - S1 — production broken, no workaround
+        - S2 — significant feature broken, workaround exists
+        - S3 — minor defect, cosmetic, or edge case
+        - S4 — nice-to-have fix
+    validations:
+      required: true
+
+  - type: input
+    id: affected-fr
+    attributes:
+      label: Affected FR (if applicable)
+      description: Which functional requirement(s) does this break?
+      placeholder: FR-03
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node version, browser, relevant env vars.
+      value: |
+        - OS:
+        - Node: (output of `node -v`)
+        - Browser:
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Attach relevant log excerpts or screenshots. Redact secrets.

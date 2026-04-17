@@ -1,0 +1,29 @@
+# CODEOWNERS — auto-assigns reviewers based on changed paths.
+# https://docs.github.com/en/repositories/managing-your-repositories-settings-and-customization/customizing-your-repository/about-code-owners
+#
+# Replace `@YOUR_ORG/*` with real GitHub team or user handles before
+# relying on this file. Teams must be members of the repository.
+
+# Default — fallback when no more specific rule matches
+*                                           @YOUR_ORG/engineering
+
+# Architecture-critical — require architect review
+/docs/architecture/decisions/               @YOUR_ORG/architects
+/src/main/java/**/support/                  @YOUR_ORG/architects
+/src/test/java/**/architecture/             @YOUR_ORG/architects
+
+# Infrastructure-critical — require devops review
+/.github/                                   @YOUR_ORG/devops
+/build.gradle.kts                           @YOUR_ORG/devops
+/settings.gradle.kts                        @YOUR_ORG/devops
+/gradle.properties                          @YOUR_ORG/devops
+/Dockerfile                                 @YOUR_ORG/devops
+/docker-compose.yml                         @YOUR_ORG/devops
+/aws/                                       @YOUR_ORG/devops
+/checkstyle/                                @YOUR_ORG/devops
+/spotbugs/                                  @YOUR_ORG/devops
+
+# Feature domains — replace with your team handles as they emerge
+# /src/main/java/**/core/api/controller/    @YOUR_ORG/api-team
+# /src/main/java/**/storage/db/             @YOUR_ORG/data-team
+# /src/main/java/**/clients/                @YOUR_ORG/integrations-team

@@ -1,0 +1,78 @@
+name: ✨ Feature
+description: New functional requirement to implement (FR-XX)
+title: "feat(<scope>): "
+labels: [feature]
+body:
+  - type: input
+    id: fr-id
+    attributes:
+      label: FR ID
+      description: Use the next unused FR number in docs/requirements/RTM.md
+      placeholder: FR-01
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User story
+      description: One line in the form "As a X, I want Y so that Z"
+      placeholder: As an operator, I want to invalidate a session so that a stolen token can't be reused.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: The observable conditions that must hold for this FR to be considered done. Gherkin-style is fine.
+      value: |
+        - [ ] Given …, when …, then …
+        - [ ] Given …, when …, then …
+    validations:
+      required: true
+
+  - type: textarea
+    id: preconditions
+    attributes:
+      label: Preconditions (inputs + state)
+      description: What must be true before this runs? Auth state, DB rows, feature flags, etc.
+
+  - type: textarea
+    id: postconditions
+    attributes:
+      label: Postconditions (outputs + state)
+      description: What must be true after this completes? Mention idempotency if relevant.
+
+  - type: textarea
+    id: decision-table
+    attributes:
+      label: Decision table (if branching logic)
+      description: Only required if the FR has 3+ interacting conditions. Markdown table with one row per Rule.
+
+  - type: dropdown
+    id: test-level
+    attributes:
+      label: Test level required
+      multiple: true
+      options:
+        - unit
+        - integration
+        - snapshot
+        - e2e
+    validations:
+      required: true
+
+  - type: input
+    id: related-adr
+    attributes:
+      label: Related ADR (optional)
+      placeholder: ADR-001
+
+  - type: checkboxes
+    id: rtm-update
+    attributes:
+      label: RTM discipline
+      options:
+        - label: I will add/update the FR row in docs/requirements/RTM.md in the same PR that implements this
+          required: true
