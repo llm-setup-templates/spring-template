@@ -30,7 +30,8 @@ All `{{...}}` placeholders below must be filled before execution:
 | `{{PROJECT_NAME}}` | Phase 0/1 — repo name + artifactId | `my-spring-app` |
 | `{{PROJECT_NAME_LOWER}}` | Phase 1 — packageName (no hyphens) | `myspringapp` |
 | `{{BASE_PACKAGE}}` | ArchitectureTest.java — scan root | `com.example.myspringapp` |
-| `{{TASK_EXECUTION_ROLE_ARN}}` | task-definition.json | `arn:aws:iam::123456789:role/ecsTaskExec` |
+| `{{TASK_EXECUTION_ROLE_ARN}}` | task-definition.json | IAM role ARN for ECS task execution (pulls image, writes logs) — e.g. `arn:aws:iam::123456789:role/ecsTaskExec` |
+| `{{TASK_ROLE_ARN}}` | task-definition.json | IAM role ARN for the running container (application-level AWS permissions) — e.g. `arn:aws:iam::123456789:role/ecsTaskRole` |
 | `{{SECRET_ARN_DB_USER}}` | task-definition.json | `arn:aws:secretsmanager:ap-northeast-2:...` |
 | `{{SECRET_ARN_DB_PASSWORD}}` | task-definition.json | `arn:aws:secretsmanager:ap-northeast-2:...` |
 | `{{AWS_ACCOUNT_ID}}` | task-definition.json | `123456789012` |
