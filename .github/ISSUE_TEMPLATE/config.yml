@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussion (not a bug or feature)
+    url: https://github.com/YOUR_ORG/YOUR_REPO/discussions
+    about: Use Discussions for questions, ideas, and open-ended conversations.
+  - name: 📖 Docs — decision tree
+    url: https://github.com/YOUR_ORG/YOUR_REPO/blob/main/docs/README.md
+    about: Which file should a given piece of documentation go into?
