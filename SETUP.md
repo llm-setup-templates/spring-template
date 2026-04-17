@@ -413,7 +413,33 @@ Edit `.claude/rules/documentation.md` to remove module sections that
 aren't installed. This keeps Claude's decision tree accurate when it
 later asks "where does this new document go?"
 
-### 8.5.5 Self-check
+### 8.5.5 validate.yml — template-only (do NOT copy)
+
+`llm-setup-templates/spring-template/.github/workflows/validate.yml` is
+the **template's own regression CI** — it verifies that validate.sh
+continues to find all required files as the template evolves. This
+workflow and `validate.sh` belong to the template repo only; **do not
+copy either to your derived repo**.
+
+When copying `.github/` contents from `/tmp/ref-spring/.github/` during
+Phase 5.5, explicitly exclude:
+
+```bash
+cp -r /tmp/ref-spring/.github/ISSUE_TEMPLATE .github/
+cp /tmp/ref-spring/.github/PULL_REQUEST_TEMPLATE.md .github/
+cp /tmp/ref-spring/.github/CODEOWNERS .github/
+# Note: .github/workflows/validate.yml — SKIP (template-only)
+# Your derived repo has its own .github/workflows/ci.yml from Phase 5
+```
+
+If you mistakenly copied validate.yml, remove it:
+
+```bash
+rm -f .github/workflows/validate.yml
+git add .github/workflows/
+```
+
+### 8.5.6 Self-check
 
 Run `bash validate.sh`. The extended validation now covers:
 
