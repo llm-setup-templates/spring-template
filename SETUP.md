@@ -75,6 +75,45 @@ gh repo create {{PROJECT_NAME}} --private --source=. --remote=origin
 
 ---
 
+## 3.1 Phase 0.5 — Clone Template Reference
+
+Throughout Phases 2~6 the agent copies files from `examples/`, `checkstyle/`,
+`spotbugs/`, `archunit/`, `docs/`, `.github/`, and other template-owned
+directories. In the `--source=.` path used in Phase 0, the new repo is
+empty — these files do NOT exist yet. Clone the template as a
+**read-only reference**:
+
+```bash
+gh repo clone llm-setup-templates/spring-template /tmp/ref-spring
+```
+
+Throughout this document, when instructed to copy from `examples/X` or
+`checkstyle/`, use the `/tmp/ref-spring/` prefix:
+
+```bash
+cp /tmp/ref-spring/examples/build.gradle.kts .
+cp /tmp/ref-spring/examples/settings.gradle.kts .
+cp -r /tmp/ref-spring/checkstyle .
+cp -r /tmp/ref-spring/spotbugs .
+cp -r /tmp/ref-spring/archunit .
+```
+
+Clean up after Phase 8:
+
+```bash
+rm -rf /tmp/ref-spring
+```
+
+> **Alternative (`--template` path)**: If you started with
+> `gh repo create --template ...` instead of Phase 0's `--source=.`, the
+> template files are already in your repo and Phase 0.5 is not needed.
+> However, the `--template` path has a drawback: GitHub auto-creates an
+> "Initial commit" message that violates the Conventional Commits gate
+> in Phase 8. For LLM autonomous flows, **`--source=.` (Phase 0) is the
+> recommended path**.
+
+---
+
 ## 4. Phase 1 — Spring Initializr Scaffolding
 
 ```bash
@@ -260,7 +299,15 @@ The agent's job is not to generate these files — they ship with the
 template. The agent's job is to **trim modules the human doesn't want**,
 customize **placeholders**, and then register the decision.
 
-### 8.5.1 Ask the human which modules to keep
+### 8.5.1 Module selection
+
+The docs/ structure has 4 modules: core (always), reports, briefings, extended.
+
+**In autonomous/LLM mode** (default for this template): use `core` only.
+Skip trimming the other modules if they don't exist yet (valid under the
+`--source=.` path — docs/ is entirely absent).
+
+**In interactive mode**: ask the human to confirm:
 
 ```
 Documentation modules to keep (default = core only):
@@ -269,6 +316,18 @@ Documentation modules to keep (default = core only):
 - briefings  [y/n]          dated, frozen interview & talk archives
 - extended   [y/n]          C4 Lv2 containers / DFD / Extended DD (JPA links)
 ```
+
+| Module | Default | Include condition |
+|--------|---------|-------------------|
+| core | YES | always |
+| reports | NO | user confirms OR `--with-reports` flag |
+| briefings | NO | user confirms OR `--with-briefings` flag |
+| extended | NO | user confirms OR `--with-extended` flag |
+
+**Source-mode note**: Under Phase 0 `--source=.`, docs/ is empty —
+copy from `/tmp/ref-spring/docs/core/` in core-only mode (see Phase 0.5).
+If you started from `--template`, docs/ is pre-populated and 5.5 becomes
+trim-only.
 
 ### 8.5.2 Trim unwanted modules
 
