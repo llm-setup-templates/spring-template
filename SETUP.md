@@ -149,9 +149,36 @@ git update-index --chmod=+x gradlew
 
 ## 5. Phase 2 — DevDeps (build.gradle.kts 수정)
 
-Copy `examples/build.gradle.kts` from this template and merge into your generated `build.gradle.kts`.
+### 5.1 Replace build.gradle.kts
 
-Key additions to the generated file:
+`examples/build.gradle.kts` is a **full replacement**, not a merge target.
+It contains the complete configuration (plugins, repositories, dependencies,
+Java toolchain, Checkstyle/SpotBugs/spring-java-format tasks). Overwrite
+the Spring Initializr-generated file entirely:
+
+```bash
+cp /tmp/ref-spring/examples/build.gradle.kts .
+```
+
+### 5.2 Replace settings.gradle.kts
+
+The Spring Initializr-generated `settings.gradle.kts` does NOT include
+the `foojay-resolver-convention` plugin, so Gradle cannot auto-provision
+JDK 17 on machines where it isn't installed. Overwrite with the
+template version:
+
+```bash
+cp /tmp/ref-spring/examples/settings.gradle.kts .
+```
+
+### 5.3 Verify Gradle can resolve JDK
+
+```bash
+./gradlew --version
+# First run downloads Gradle wrapper + JDK 17 via Foojay (~200MB, 1-2 min)
+```
+
+Key additions that the template `build.gradle.kts` includes over the generated file:
 
 **plugins block — add after spring boot plugin:**
 ```kotlin
