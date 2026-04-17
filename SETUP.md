@@ -248,6 +248,28 @@ Copy the following files from `examples/` into your project root:
     `sed -i 's/^package com\.example/package com.example.{{PROJECT_NAME_LOWER}}/' src/main/java/.../AppProperties.java`
   - Add `@EnableConfigurationProperties(AppProperties.class)` to your main `*Application.java`
 
+### 6.X AWS placeholder replacement
+
+Before Phase 5.5's `validate.sh`, ensure `aws/task-definition.json`
+has no remaining `{{...}}` placeholders. Required replacements:
+
+| Placeholder | Example value |
+|-------------|---------------|
+| {{AWS_ACCOUNT_ID}} | `123456789012` |
+| {{AWS_REGION}} | `us-east-1` |
+| {{TASK_EXECUTION_ROLE_ARN}} | `arn:aws:iam::...` |
+| {{TASK_ROLE_ARN}} | `arn:aws:iam::...` |
+| {{SECRET_ARN_DB_USER}} | `arn:aws:secretsmanager:...` |
+| {{SECRET_ARN_DB_PASSWORD}} | `arn:aws:secretsmanager:...` |
+| {{RDS_ENDPOINT}} | `mydb.xxxxxx.us-east-1.rds.amazonaws.com` |
+| {{DB_NAME}} | `myapp` |
+| {{PROJECT_NAME}} | your repo name |
+
+For LLM autonomous flows without real AWS resources, placeholder-like
+dummy ARNs (e.g., `arn:aws:iam::000000000000:role/dummy`) satisfy `validate.sh`
+structure checks while failing real AWS deployment — acceptable for CI-green
+purposes.
+
 ---
 
 ## 7. Phase 4 — Gradle Tasks
@@ -414,6 +436,19 @@ Run `bash validate.sh`. The extended validation now covers:
 ---
 
 ## 10. Phase 7 — Local Verify (fail-fast)
+
+### 10.0 Preflight: format before verify
+
+Run `./gradlew format` once before the verify loop. The Spring Initializr
+scaffold often doesn't match spring-java-format on import order; running
+`format` first avoids a guaranteed Gate-1 failure later:
+
+```bash
+./gradlew format
+```
+
+(This replaces the need to retry after `checkFormat` fails. Troubleshooting
+row "checkFormat fails on import order" remains as a fallback.)
 
 ```bash
 ./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar
