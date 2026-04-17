@@ -30,7 +30,8 @@ All `{{...}}` placeholders below must be filled before execution:
 | `{{PROJECT_NAME}}` | Phase 0/1 — repo name + artifactId | `my-spring-app` |
 | `{{PROJECT_NAME_LOWER}}` | Phase 1 — packageName (no hyphens) | `myspringapp` |
 | `{{BASE_PACKAGE}}` | ArchitectureTest.java — scan root | `com.example.myspringapp` |
-| `{{TASK_EXECUTION_ROLE_ARN}}` | task-definition.json | `arn:aws:iam::123456789:role/ecsTaskExec` |
+| `{{TASK_EXECUTION_ROLE_ARN}}` | task-definition.json | IAM role ARN for ECS task execution (pulls image, writes logs) — e.g. `arn:aws:iam::123456789:role/ecsTaskExec` |
+| `{{TASK_ROLE_ARN}}` | task-definition.json | IAM role ARN for the running container (application-level AWS permissions) — e.g. `arn:aws:iam::123456789:role/ecsTaskRole` |
 | `{{SECRET_ARN_DB_USER}}` | task-definition.json | `arn:aws:secretsmanager:ap-northeast-2:...` |
 | `{{SECRET_ARN_DB_PASSWORD}}` | task-definition.json | `arn:aws:secretsmanager:ap-northeast-2:...` |
 | `{{AWS_ACCOUNT_ID}}` | task-definition.json | `123456789012` |
@@ -75,6 +76,45 @@ gh repo create {{PROJECT_NAME}} --private --source=. --remote=origin
 
 ---
 
+## 3.1 Phase 0.5 — Clone Template Reference
+
+Throughout Phases 2~6 the agent copies files from `examples/`, `checkstyle/`,
+`spotbugs/`, `archunit/`, `docs/`, `.github/`, and other template-owned
+directories. In the `--source=.` path used in Phase 0, the new repo is
+empty — these files do NOT exist yet. Clone the template as a
+**read-only reference**:
+
+```bash
+gh repo clone llm-setup-templates/spring-template /tmp/ref-spring
+```
+
+Throughout this document, when instructed to copy from `examples/X` or
+`checkstyle/`, use the `/tmp/ref-spring/` prefix:
+
+```bash
+cp /tmp/ref-spring/examples/build.gradle.kts .
+cp /tmp/ref-spring/examples/settings.gradle.kts .
+cp -r /tmp/ref-spring/checkstyle .
+cp -r /tmp/ref-spring/spotbugs .
+cp -r /tmp/ref-spring/archunit .
+```
+
+Clean up after Phase 8:
+
+```bash
+rm -rf /tmp/ref-spring
+```
+
+> **Alternative (`--template` path)**: If you started with
+> `gh repo create --template ...` instead of Phase 0's `--source=.`, the
+> template files are already in your repo and Phase 0.5 is not needed.
+> However, the `--template` path has a drawback: GitHub auto-creates an
+> "Initial commit" message that violates the Conventional Commits gate
+> in Phase 8. For LLM autonomous flows, **`--source=.` (Phase 0) is the
+> recommended path**.
+
+---
+
 ## 4. Phase 1 — Spring Initializr Scaffolding
 
 ```bash
@@ -109,9 +149,36 @@ git update-index --chmod=+x gradlew
 
 ## 5. Phase 2 — DevDeps (build.gradle.kts 수정)
 
-Copy `examples/build.gradle.kts` from this template and merge into your generated `build.gradle.kts`.
+### 5.1 Replace build.gradle.kts
 
-Key additions to the generated file:
+`examples/build.gradle.kts` is a **full replacement**, not a merge target.
+It contains the complete configuration (plugins, repositories, dependencies,
+Java toolchain, Checkstyle/SpotBugs/spring-java-format tasks). Overwrite
+the Spring Initializr-generated file entirely:
+
+```bash
+cp /tmp/ref-spring/examples/build.gradle.kts .
+```
+
+### 5.2 Replace settings.gradle.kts
+
+The Spring Initializr-generated `settings.gradle.kts` does NOT include
+the `foojay-resolver-convention` plugin, so Gradle cannot auto-provision
+JDK 17 on machines where it isn't installed. Overwrite with the
+template version:
+
+```bash
+cp /tmp/ref-spring/examples/settings.gradle.kts .
+```
+
+### 5.3 Verify Gradle can resolve JDK
+
+```bash
+./gradlew --version
+# First run downloads Gradle wrapper + JDK 17 via Foojay (~200MB, 1-2 min)
+```
+
+Key additions that the template `build.gradle.kts` includes over the generated file:
 
 **plugins block — add after spring boot plugin:**
 ```kotlin
@@ -180,6 +247,28 @@ Copy the following files from `examples/` into your project root:
   - **Fix package declaration**: the template file uses `com.example.config`; replace `com.example` with your actual base package:
     `sed -i 's/^package com\.example/package com.example.{{PROJECT_NAME_LOWER}}/' src/main/java/.../AppProperties.java`
   - Add `@EnableConfigurationProperties(AppProperties.class)` to your main `*Application.java`
+
+### 6.X AWS placeholder replacement
+
+Before Phase 5.5's `validate.sh`, ensure `aws/task-definition.json`
+has no remaining `{{...}}` placeholders. Required replacements:
+
+| Placeholder | Example value |
+|-------------|---------------|
+| {{AWS_ACCOUNT_ID}} | `123456789012` |
+| {{AWS_REGION}} | `us-east-1` |
+| {{TASK_EXECUTION_ROLE_ARN}} | `arn:aws:iam::...` |
+| {{TASK_ROLE_ARN}} | `arn:aws:iam::...` |
+| {{SECRET_ARN_DB_USER}} | `arn:aws:secretsmanager:...` |
+| {{SECRET_ARN_DB_PASSWORD}} | `arn:aws:secretsmanager:...` |
+| {{RDS_ENDPOINT}} | `mydb.xxxxxx.us-east-1.rds.amazonaws.com` |
+| {{DB_NAME}} | `myapp` |
+| {{PROJECT_NAME}} | your repo name |
+
+For LLM autonomous flows without real AWS resources, placeholder-like
+dummy ARNs (e.g., `arn:aws:iam::000000000000:role/dummy`) satisfy `validate.sh`
+structure checks while failing real AWS deployment — acceptable for CI-green
+purposes.
 
 ---
 
@@ -260,7 +349,15 @@ The agent's job is not to generate these files — they ship with the
 template. The agent's job is to **trim modules the human doesn't want**,
 customize **placeholders**, and then register the decision.
 
-### 8.5.1 Ask the human which modules to keep
+### 8.5.1 Module selection
+
+The docs/ structure has 4 modules: core (always), reports, briefings, extended.
+
+**In autonomous/LLM mode** (default for this template): use `core` only.
+Skip trimming the other modules if they don't exist yet (valid under the
+`--source=.` path — docs/ is entirely absent).
+
+**In interactive mode**: ask the human to confirm:
 
 ```
 Documentation modules to keep (default = core only):
@@ -269,6 +366,18 @@ Documentation modules to keep (default = core only):
 - briefings  [y/n]          dated, frozen interview & talk archives
 - extended   [y/n]          C4 Lv2 containers / DFD / Extended DD (JPA links)
 ```
+
+| Module | Default | Include condition |
+|--------|---------|-------------------|
+| core | YES | always |
+| reports | NO | user confirms OR `--with-reports` flag |
+| briefings | NO | user confirms OR `--with-briefings` flag |
+| extended | NO | user confirms OR `--with-extended` flag |
+
+**Source-mode note**: Under Phase 0 `--source=.`, docs/ is empty —
+copy from `/tmp/ref-spring/docs/core/` in core-only mode (see Phase 0.5).
+If you started from `--template`, docs/ is pre-populated and 5.5 becomes
+trim-only.
 
 ### 8.5.2 Trim unwanted modules
 
@@ -327,6 +436,19 @@ Run `bash validate.sh`. The extended validation now covers:
 ---
 
 ## 10. Phase 7 — Local Verify (fail-fast)
+
+### 10.0 Preflight: format before verify
+
+Run `./gradlew format` once before the verify loop. The Spring Initializr
+scaffold often doesn't match spring-java-format on import order; running
+`format` first avoids a guaranteed Gate-1 failure later:
+
+```bash
+./gradlew format
+```
+
+(This replaces the need to retry after `checkFormat` fails. Troubleshooting
+row "checkFormat fails on import order" remains as a fallback.)
 
 ```bash
 ./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar
