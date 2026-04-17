@@ -1,121 +1,123 @@
-# spring-template
+# Spring Boot Template — LLM-Agent-Ready Scaffolding
 
-> LLM-agent-driven Spring Boot 3 project scaffolding template.
-> Hand `SETUP.md` to Claude Code / Cursor and get a green CI pipeline on GitHub.
+[한국어 README](./README.ko.md)
 
-[![CI](https://github.com/{{OWNER}}/spring-template/actions/workflows/ci.yml/badge.svg)](https://github.com/{{OWNER}}/spring-template/actions/workflows/ci.yml)
-[![CodeRabbit](https://img.shields.io/badge/CodeRabbit-Active-brightgreen)](https://coderabbit.ai)
-[![License](https://img.shields.io/badge/License-Apache--2.0-blue)](LICENSE)
+> An opinionated Spring Boot 3 + Java 17 (Temurin LTS) + Gradle KTS template
+> designed for LLM coding agents (Claude Code / Cursor) to scaffold from an
+> empty directory to a green GitHub Actions CI — without human intervention
+> mid-setup.
+
+**Empirically verified**: SETUP.md alone drives Claude Code → green CI in under 3 min
+([proof run](https://github.com/KWONSEOK02/llm-setup-e2e17-spring/actions/runs/24565850331), 2m53s).
+
+---
 
 ## Why this template exists
 
-Spring Boot 3 + Java 17 + Gradle Kotlin DSL is the 2026 production baseline,
-yet most team starters omit ArchUnit, SpotBugs, and CodeRabbit — leaving
-architecture drift undetected until code review. This template wires all
-four static analysis tools (spring-java-format / Checkstyle / SpotBugs /
-ArchUnit) into a single fail-fast CI pipeline so that an LLM agent can
-scaffold a green project in one shot.
+Spring Boot has a hundred ways to set up a project. This template picks **one
+defensible answer per layer** and ships a SETUP.md the LLM agent executes
+top-to-bottom.
 
-Reference: team-dodn/spring-boot-java-template fork (KWONSEOK02) analyzed
-in `CHECKMATE-BACKEND-AUDIT.md`. CheckMate backend (checkmate-smu/checkmate-web-backend)
-used as real-world baseline: it already uses Checkstyle + SpotBugs + ArchUnit but
-omits springdoc, commitlint, Dockerfile, and ECS task-definition — all added here.
+**Pinned choices** (with reasoning):
 
-## Who is this for
-- Developers using Claude Code / Cursor who want reproducible Spring Boot scaffolding
-- Student teams starting from scratch with 2026 CI best practices
-- Teams migrating from Groovy DSL or missing static analysis tools
+| Layer | Choice | Why (rejected alternatives) |
+|---|---|---|
+| Java | 17 (Temurin LTS, Foojay auto-provisioned) | 11/21 both valid, but 17 is current LTS majority; Foojay means host JDK version doesn't matter |
+| Build | Gradle Kotlin DSL 8.x | Maven's XML is verbose; Gradle Groovy DSL slowly giving way to KTS |
+| Architecture | Singleton start, multi-module ready (team-dodn package naming) | Multi-module from day 1 over-engineers; "never multi-module" traps you when you scale |
+| Response envelope | `ApiResponse<T>` wrapper, `CoreException` hierarchy | Raw entity return leaks JPA state to clients; `ResponseStatusException` in services breaks layering |
+| Formatter | spring-java-format 0.0.47 (owns whitespace) | Checkstyle fighting Prettier-style formatting is a waste |
+| Linter | Checkstyle 10.17 (Google Java Style base) + SpotBugs 4.8.6 | One for style, one for bug patterns |
+| Boundary test | ArchUnit (10 layered rules) | Reflection-based checks that compile-time can't catch |
+| CI commit gate | wagoid/commitlint-github-action@v6 | JVM templates can't use Husky portably — CI-level gate |
 
-## Quick Start
-1. Fork or clone this template
-2. Open it in Claude Code / Cursor
-3. Ask: "Please set up a new Spring Boot project using SETUP.md"
-4. The agent executes Phase 0 → Phase 8 and pushes to GitHub
+---
 
-## What's Inside
-- `SETUP.md` — 14-phase setup prompt (Spring Initializr → CI green)
-- `CHECKMATE-BACKEND-AUDIT.md` — real-world CheckMate backend analysis (6-section delta)
-- `CLAUDE.md` — base CLAUDE.md for the generated project
-- `_dot-claude/rules/` — code-style, git-workflow, architecture (ArchUnit), verification-loop
-- `_dot-claude/skills/claude-md-reviewer/` — English skill for reviewing CLAUDE.md quality
-- `examples/` — ready-to-copy config files (build.gradle.kts, checkstyle, Dockerfile, etc.)
-- `CODERABBIT-PROMPT-GUIDE.md` — how to author `.coderabbit.yaml` path_instructions
+## Who should use this
 
-> **Note on `_dot-claude/`:** These files should be copied to `.claude/` in the
-> generated project. The `_dot-claude/` staging directory is used here because
-> `.claude/` is a protected namespace in the template itself.
-> ```bash
-> cp -r _dot-claude/ .claude/
-> ```
+**Persona 1 — Solo developer or small team starting a new Spring Boot service**
+- Solves: "which packages? which response wrapper? which error type? which boundary check?"
+- Does NOT solve: database schema design, external API integration choices
 
-## Scaling Path — Multi-Module (team-dodn pattern)
+**Persona 2 — LLM-assisted development (Claude Code, Cursor)**
+- Solves: SETUP.md is fail-fast, ArchUnit catches layer violations, spring-java-format auto-fixes style — the agent gets concrete red→green feedback
+- Does NOT solve: business logic; the template shapes structure, not domain
 
-This template starts single-module. When the project grows:
+**Persona 3 — Team migrating from unversioned Spring Boot conventions to a reviewable codebase**
+- Solves: Checkstyle + SpotBugs + ArchUnit in CI give you concrete failures to fix one at a time
+- Does NOT solve: the migration itself
 
-```
-# Current (single-module)
-com.example.{controller,service,repository,domain,dto,config}
+**Persona 4 — Instructor setting up a reproducible Spring Boot course**
+- Solves: every student has identical JDK, Gradle, plugins, CI
+- Does NOT solve: curriculum
 
-# Scaled (multi-module — team-dodn pattern)
-settings.gradle.kts:
-  include("core:core-api")       # was ..controller.. + ..service..
-  include("storage:db-core")     # was ..repository.. + ..domain..
-  include("clients:clients-*")   # external API integrations
-  include("support:logging")     # cross-cutting concerns
+---
 
-ArchUnit rule 6 already enforces the package boundaries.
-Migration = Gradle settings change + move packages.
-```
+## Who should NOT use this
 
-Reference: [team-dodn/spring-boot-java-template](https://github.com/team-dodn/spring-boot-java-template)
+- You're on Spring Boot 2.x or Java 11 → this template pins 3.x + 17
+- You want Maven → rewrite build.gradle.kts / settings.gradle.kts in pom.xml
+- You need a pure library (no web layer) → the template is service-oriented (`spring-boot-starter-web`)
+- You're committed to Clean Architecture / Hexagonal with ports & adapters from day 1 → this template is layered-first, CA-ready second
 
-## Phase Overview (14 sections in SETUP.md)
+---
 
-1. Preface + LLM meta-instructions + Placeholder Index
-2. Prerequisites (gh, git, JDK 17 — auto-downloaded by Gradle if absent, curl, Docker)
-3. Phase 0 — Repo Init (gh repo create)
-4. Phase 1 — Spring Initializr (Gradle Kotlin DSL, Java 17)
-5. Phase 2 — DevDeps (Checkstyle, SpotBugs, spring-java-format, springdoc, ArchUnit, Testcontainers)
-6. Phase 3 — Config Files (checkstyle.xml, Dockerfile, docker-compose.yml, AppProperties.java, etc.)
-7. Phase 4 — Gradle Tasks verification
-8. Phase 5 — CI Workflow (commitlint → format → checkstyle → spotbugs → test → build)
-9. Phase 6 — CodeRabbit Setup
-10. Phase 7 — Local Verify (./gradlew + Docker smoke test)
-11. Phase 8 — First Push + CI Green (Git Safety Gate)
-12. Troubleshooting (5 common issues)
-13. Essential Checklist
-14. Config Reference Appendix (pinned versions, CI reference, CodeRabbit reference)
+## Quick fit check
 
-## Static Analysis Stack
+1. **Greenfield Spring Boot 3 service project?** If no → consider forking.
+2. **Willing to accept layered architecture and migrate to multi-module later if needed?** If no → pick a multi-module template from day 1.
+3. **OK with Gradle KTS (not Maven or Groovy)?** If no → this template requires a rewrite of the build files.
 
-| Tool | Purpose | Enforced |
-|------|---------|---------|
-| spring-java-format | Whitespace, import ordering | `./gradlew checkFormat` + CI |
-| Checkstyle 10.17.0 | Naming, braces, line length | `./gradlew checkstyleMain` + CI |
-| SpotBugs 4.8.6 | Bug patterns, null safety | `./gradlew spotbugsMain` + CI |
-| ArchUnit 1.3.0 | 6-rule layered architecture | `./gradlew test` (ArchUnit runs as JUnit) |
-| CodeRabbit | PR review (7 Spring-specific items) | Automatic on every PR |
-| commitlint | Conventional Commits on PR | `wagoid/commitlint-github-action@v6` in CI |
+All three yes → proceed to [SETUP.md](./SETUP.md).
 
-## Scaling to Multi-Module
+---
 
-This template uses single-module structure with package names pre-aligned to the
-team-dodn multi-module pattern. When your project grows:
+## Scaling path — singleton to multi-module
 
-| Package | → Gradle Module | Responsibility |
-|---------|----------------|----------------|
-| `core.api.*` | `core:core-api` | REST controllers, config, the only bootJar-enabled module |
-| `core.domain.*` | `core:core-api` | Business logic, domain objects |
-| `core.enums.*` | `core:core-enum` | Shared enums exposed to external modules |
-| `storage.db.*` | `storage:db-core` | JPA entities, repositories, datasource config |
-| `clients.*` | `clients:client-*` | External API integrations |
-| `support.*` | `support:logging`, `support:monitoring` | Cross-cutting concerns |
+The template starts as a **single Gradle module** but uses team-dodn's package
+naming convention so you can extract to Gradle submodules later without
+restructuring code.
 
-Migration steps:
-1. Create `settings.gradle.kts` with `include("core:core-api", "storage:db-core", ...)`
-2. Move packages to submodule `src/` directories
-3. Add inter-module `implementation(project(...))` dependencies
-4. ArchUnit rules carry over unchanged
+Current packages → future modules:
+
+| Package today | Future Gradle module | Rough signal to split |
+|---|---|---|
+| `core.api` | `core:core-api` | > 40 files in `core/` or > 2 teams owning it |
+| `core.domain` | `core:core-api` (domain subdir) | Tightly coupled to core-api; split further only with DDD |
+| `core.enums` | `core:core-enum` | Shared across 3+ modules |
+| `storage.db` | `storage:db-core` | Multiple storage backends emerge |
+| `clients.*` | `clients:client-*` | 3+ distinct external APIs with different SLOs |
+| `support.*` | `support:logging`, `support:monitoring` | When you need to publish reusable utility jars |
+
+**When to split?** The anti-pattern is splitting too early. Stay singleton until:
+- Compile time > 2 min and you can identify a subtree that's rarely edited
+- Two teams are blocking each other's CI through single-module test times
+- You need to publish a subset (e.g., `core.enums`) as a reusable library
+
+ArchUnit rules carry over unchanged when you split — they enforce package
+boundaries, and `./gradlew :core-api:test` runs the same ArchUnit checks against
+the extracted module.
+
+---
+
+## What's inside
+
+- Setup flow: [SETUP.md](./SETUP.md)
+- AI agent rules: [CLAUDE.md](./CLAUDE.md)
+- Architecture (layer rules, ArchUnit): [.claude/rules/architecture.md](./.claude/rules/architecture.md)
+- Verification loop (Gradle task sequence): [.claude/rules/verification-loop.md](./.claude/rules/verification-loop.md)
+- Test modification rules: [.claude/rules/test-modification.md](./.claude/rules/test-modification.md)
+- Ready-to-copy config files: [examples/](./examples/)
+
+---
+
+## Related templates
+
+- [python-template](https://github.com/llm-setup-templates/python-template) — Python 3.13 + 3 archetypes
+- [typescript-template](https://github.com/llm-setup-templates/typescript-template) — Next.js 15 + FSD 5 layers
+
+---
 
 ## License
+
 Apache-2.0
