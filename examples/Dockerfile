@@ -1,6 +1,6 @@
 # Stage 1: Build
 # Uses JDK 17 Alpine for compiling and packaging the Spring Boot application.
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:25-jdk-alpine AS builder
 WORKDIR /workspace/app
 
 # Gradle wrapper copied first (layer cache optimization — changes rarely)
@@ -29,7 +29,7 @@ RUN mkdir -p build/extracted && \
 
 # Stage 2: Runtime
 # Uses JRE 17 Alpine (smaller image — no compiler toolchain).
-FROM eclipse-temurin:17-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 WORKDIR /app
 
 # Copy extracted layers in cache-friendly order
