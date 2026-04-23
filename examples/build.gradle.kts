@@ -5,6 +5,7 @@ plugins {
     id("checkstyle")
     id("com.github.spotbugs") version "6.0.26"
     id("io.spring.javaformat") version "0.0.47"
+    id("jacoco")
 }
 
 group = "com.example"
@@ -55,4 +56,50 @@ spotbugs {
 tasks.withType<com.github.spotbugs.snom.SpotBugsTask> {
     reports.create("html") { enabled = true }
     reports.create("xml") { enabled = false }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.named<Test>("test") {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// Threshold 70% is a starter baseline. Raise to 0.80 once real controllers/services exist.
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = "CLASS"
+            limit {
+                counter = "LINE"
+                minimum = "0.70".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                minimum = "0.70".toBigDecimal()
+            }
+            excludes = listOf(
+                "**/config/**",
+                "**/entity/**",
+                "**/dto/**",
+                "**/Application",
+                "**/support/error/**",
+                "**/architecture/**",
+                "**/core/api/support/**",
+            )
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
