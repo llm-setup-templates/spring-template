@@ -5,6 +5,7 @@ After any code change, the agent MUST run the verification loop:
 
 ```
 ./gradlew checkFormat              → format check
+./gradlew format                   → format auto-fix (opposite of checkFormat)
 ./gradlew compileJava compileTestJava  → type check (if applicable)
 ./gradlew checkstyleMain checkstyleTest    → static analysis (optional — Spring: checkstyle, spotbugs, archunit)
 ./gradlew spotbugsMain

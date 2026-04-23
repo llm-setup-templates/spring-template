@@ -8,7 +8,7 @@
 - File encoding: UTF-8
 
 ## Formatter ownership
-- The formatter (spring-java-format 0.0.43) owns all whitespace / layout concerns.
+- The formatter (spring-java-format 0.0.47) owns all whitespace / layout concerns.
 - The linter (Checkstyle 10.17.0 (Google Java Style base)) owns semantic / logic rules only.
 - Style rules that conflict between the two must be disabled in the linter (see `checkstyle/suppressions.xml`).
 
