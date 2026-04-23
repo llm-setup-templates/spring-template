@@ -16,7 +16,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  * ArchUnit architecture enforcement tests.
  *
  * <p>These tests run as part of the normal test suite (./gradlew test).
- * All 6 rules must remain enabled - see .coderabbit.yaml for PR-level checks.
+ * All 12 rules must remain enabled - see .coderabbit.yaml for PR-level checks.
  *
  * <p>Multi-module scaling path: when splitting to multi-module (team-dodn pattern),
  * package names map directly: com.example.core, com.example.clients,
