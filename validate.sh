@@ -162,15 +162,19 @@ check_gte() {
 }
 
 echo ""
-echo "=== V9: regression guards (PR #6 Java version + format) ==="
+echo "=== V9: regression guards (PR #6 Java + format + rule count + dependabot) ==="
 check_absent "V9a" "SETUP.md uses javaVersion=17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "javaVersion=21"
 check_absent "V9b" "SETUP.md Prerequisites: JDK >= 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "JDK >= 21"
 check_absent "V9c" "SETUP.md Pinned Versions: Java 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "Java \(Temurin\) \| 21"
-check_absent "V9d" "SETUP.md / CLAUDE.md use spring-java-format 0.0.47 (not 0.0.43)" \
+check_absent "V9d-1" "CLAUDE.md uses spring-java-format 0.0.47 (not 0.0.43)" \
   "$TEMPLATE_DIR/CLAUDE.md" 'spring-java-format 0\.0\.43'
+check_absent "V9d-2" ".claude/rules/code-style.md uses spring-java-format 0.0.47 (not 0.0.43)" \
+  "$TEMPLATE_DIR/.claude/rules/code-style.md" 'spring-java-format 0\.0\.43'
+check_present_eq "V9e" "ArchitectureTest.java JavaDoc claims 12 rules" \
+  "$(grep -c 'All 12 rules' "$TEMPLATE_DIR/examples/archunit/ArchitectureTest.java" 2>/dev/null || echo 0)" "1"
 
 echo ""
 echo "=== V10: build files consistent with documentation ==="
@@ -268,6 +272,19 @@ elif [ "$V16_PRESENT" = "0" ]; then
   echo "SKIP [V16] Extended module not installed"
 else
   fail "V16" "Extended module partial: $V16_PRESENT/3 — must be all or none"
+fi
+
+echo ""
+echo "=== V17: Dependabot configuration present (.github + examples snapshot) ==="
+if [ -f "$TEMPLATE_DIR/.github/dependabot.yml" ]; then
+  pass "V17a" ".github/dependabot.yml exists"
+else
+  fail "V17a" ".github/dependabot.yml missing"
+fi
+if [ -f "$TEMPLATE_DIR/examples/dependabot.yml" ]; then
+  pass "V17b" "examples/dependabot.yml exists"
+else
+  fail "V17b" "examples/dependabot.yml missing"
 fi
 
 echo ""

@@ -290,6 +290,8 @@ Expected output includes: `checkFormat`, `format`, `checkstyleMain`, `checkstyle
 
 Copy `examples/ci.yml` → `.github/workflows/ci.yml`
 
+Copy `examples/dependabot.yml` → `.github/dependabot.yml` (derived repo Dependabot config snapshot)
+
 Also copy `examples/.commitlintrc.json` → `.commitlintrc.json`
 
 The CI pipeline runs (in order, fail-fast):
@@ -623,7 +625,7 @@ See `examples/` directory for all ready-to-copy config files:
 - `examples/checkstyle/checkstyle.xml` — Google Java Style base + suppressions
 - `examples/checkstyle/suppressions.xml` — spring-java-format conflict suppression
 - `examples/spotbugs/spotbugs-exclude.xml` — Spring false positive exclusions
-- `examples/archunit/ArchitectureTest.java` — 6-rule ArchUnit test
+- `examples/archunit/ArchitectureTest.java` — 12-rule ArchUnit test (Rule 1~6 + Rule 5 분화 3개 + Rule 7~10 multi-module boundary)
 - `examples/config/AppProperties.java` — @ConfigurationProperties record example
 - `examples/.springjavaformatconfig` — spring-java-format activation file
 - `examples/application.yml` — production config (open-in-view=false, show-sql=false)
@@ -667,3 +669,17 @@ If CodeRabbit is unavailable, add to `.github/workflows/ci.yml`:
         body
       });
 ```
+
+### § Coverage Threshold Adjustment
+
+The JaCoCo baseline in `examples/build.gradle.kts` is pinned at **70% line + 70% branch** (see ADR-001). Raise it once the project satisfies any of the following:
+
+| Trigger | Recommended threshold |
+|---|---|
+| Team grows to ≥ 5 engineers | 75-80% line + branch |
+| Codebase enters audit scope (SOC2 / ISO / internal governance) | 80% line + branch |
+| Production deployment active | 80% line + 70% branch |
+
+To raise: edit `examples/build.gradle.kts` violationRules and change `minimum = "0.70".toBigDecimal()` to `minimum = "0.80".toBigDecimal()` for each `counter` block.
+
+Do not lower below 70% without recording an ADR supersede.

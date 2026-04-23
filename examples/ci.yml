@@ -3,11 +3,14 @@ name: CI
 on:
   push:
     branches: [main, dev]
+    paths-ignore: ['docs/**', '**.md']
   pull_request:
     branches: [main, dev]
+    paths-ignore: ['docs/**', '**.md']
 
 jobs:
   ci:
+    name: 'CI — Quality + Architecture'
     runs-on: ubuntu-latest
 
     # Testcontainers integration tests use the host Docker on ubuntu-latest
@@ -47,6 +50,9 @@ jobs:
 
       - name: Test (includes ArchUnit + Testcontainers)
         run: ./gradlew compileJava compileTestJava test
+
+      - name: Coverage (JaCoCo)
+        run: ./gradlew jacocoTestReport jacocoTestCoverageVerification
 
       - name: Build
         run: ./gradlew build bootJar
