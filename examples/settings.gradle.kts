@@ -3,7 +3,7 @@ plugins {
     // Team members with any installed JDK (or none) get the correct version
     // downloaded to ~/.gradle/jdks/ on first build. Keeps the template
     // independent of host JDK state.
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 rootProject.name = "{{PROJECT_NAME}}"
