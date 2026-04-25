@@ -1,6 +1,5 @@
-package com.example.architecture;
+package {{BASE_PACKAGE}}.architecture;
 
-// TODO: replace com.example with {{BASE_PACKAGE}}
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -19,15 +18,15 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  * All 12 rules must remain enabled - see .coderabbit.yaml for PR-level checks.
  *
  * <p>Multi-module scaling path: when splitting to multi-module (team-dodn pattern),
- * package names map directly: com.example.core, com.example.clients,
- * com.example.storage, com.example.support. Rule 6 enforces this from day one.
+ * package names map directly: {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients,
+ * {{BASE_PACKAGE}}.storage, {{BASE_PACKAGE}}.support. Rule 6 enforces this from day one.
  *
  * <p>Empty-scaffold compatibility: layeredArchitecture uses withOptionalLayers(true)
  * and src/test/resources/archunit.properties sets archRule.failOnEmptyShould=false,
  * so the rules pass on a day-0 skeleton before any controllers/services exist.
  * Remove those once real classes land if you prefer strict enforcement.
  */
-@AnalyzeClasses(packages = "com.example", importOptions = {ImportOption.DoNotIncludeTests.class})
+@AnalyzeClasses(packages = "{{BASE_PACKAGE}}", importOptions = {ImportOption.DoNotIncludeTests.class})
 public class ArchitectureTest {
 
     // Rule 1: Layered Architecture
@@ -94,16 +93,16 @@ public class ArchitectureTest {
         .should().haveSimpleNameEndingWith("Repository");
 
     // Rule 6: Multi-Module Package Boundary Preparation
-    // Enforces that all classes live within com.example package hierarchy.
+    // Enforces that all classes live within {{BASE_PACKAGE}} package hierarchy.
     // When scaling to multi-module (team-dodn pattern), packages map to:
-    //   com.example.core, com.example.clients, com.example.storage, com.example.support
+    //   {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients, {{BASE_PACKAGE}}.storage, {{BASE_PACKAGE}}.support
     // Migration = Gradle settings.gradle.kts include() change + move packages.
     // NOTE: keep .as() message on a single short line. spring-java-format may
     // collapse multi-string concatenations into one line, and Checkstyle's
     // 120-char limit will then fail once the package name is substituted.
     @ArchTest
     static final ArchRule packageBoundaries = classes()
-        .should().resideInAPackage("com.example..")
+        .should().resideInAPackage("{{BASE_PACKAGE}}..")
         .as("All classes must reside within base package (multi-module split preparation)");
 
     // NOTE: Rule 1 (layeredArchitecture) uses the original flat package names.

@@ -1,6 +1,6 @@
-package com.example.demo.support.response;
+package {{BASE_PACKAGE}}.support.response;
 
-import com.example.demo.support.error.ErrorType;
+import {{BASE_PACKAGE}}.support.error.ErrorType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

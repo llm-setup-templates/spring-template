@@ -1,4 +1,4 @@
-package com.example.demo.support.response;
+package {{BASE_PACKAGE}}.support.response;
 
 public enum ResultType {
     SUCCESS,

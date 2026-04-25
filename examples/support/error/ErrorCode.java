@@ -1,4 +1,4 @@
-package com.example.demo.support.error;
+package {{BASE_PACKAGE}}.support.error;
 
 public enum ErrorCode {
     USER_NOT_FOUND,

@@ -13,16 +13,38 @@ echo "=== spring-template placeholder leak check ==="
 # add a file just to silence a leak; fix the leak unless it is truly
 # runtime-configurable.
 ALLOWLIST=(
-  "examples/aws/task-definition.json"    # ECS task def — all ARNs/IDs are user-input
-  "examples/settings.gradle.kts"         # rootProject.name = {{PROJECT_NAME}}
-  "examples/archunit/ArchitectureTest.java"  # TODO marker: {{BASE_PACKAGE}}
+  # Original (pre-Phase-13b)
+  "examples/aws/task-definition.json"          # 9 AWS placeholders — runtime user input
+  "examples/settings.gradle.kts"               # {{PROJECT_NAME}}
+  "examples/archunit/ArchitectureTest.java"    # {{BASE_PACKAGE}} 3 places (package + @AnalyzeClasses + Rule 6)
+  # Phase 13b T11: BASE_PACKAGE placeholder introduced
+  "examples/config/AppProperties.java"         # {{BASE_PACKAGE}}.config
+  "examples/support/error/CoreException.java"  # {{BASE_PACKAGE}}.support.error
+  "examples/support/error/ErrorCode.java"      # same
+  "examples/support/error/ErrorType.java"      # same
+  "examples/support/response/ApiResponse.java" # {{BASE_PACKAGE}}.support.response + import
+  "examples/support/response/ResultType.java"  # same
+  "examples/core/api/support/ApiControllerAdvice.java"  # {{BASE_PACKAGE}}.core.api.support + 3 imports
+  "examples/application-dev.yml"               # logging.level.{{BASE_PACKAGE}} (only yml with hit, others don't)
+  # CLAUDE.md: {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}}
+  "CLAUDE.md"
+  # Documentation files that show placeholders as examples/instructions
+  # (template-only, removed by Stage A — never reach derived repo).
+  "SETUP.md"
+  "RATIONALE.md"
+  "docs/architecture/decisions/ADR-002-clone-script-scaffolding.md"
+  # Phase 13b: initializr-seed is the raw Initializr starter.zip output (NO placeholders).
+  # Initializr seed lives under examples/initializr-seed/ and is excluded from leak scan
+  # via the grep --exclude-dir filter below (more efficient than per-file allowlisting).
 )
 
 ALL_LEAKS=$(grep -rl '{{[A-Z_][A-Z0-9_]*}}' "$TEMPLATE_DIR" \
   --include="*.kts" --include="*.yml" \
   --include="*.yaml" --include="*.json" --include="*.java" \
-  --include="*.xml" \
+  --include="*.xml" --include="*.md" \
   --exclude-dir=".git" \
+  --exclude-dir="initializr-seed" \
+  --exclude-dir=".plans" \
   2>/dev/null || true)
 
 LEAKS_FILTERED=""
@@ -83,6 +105,7 @@ REQUIRED_FILES=(
   "examples/.springjavaformatconfig"
   "examples/application.yml"
   "examples/application-local.yml"
+  "examples/application-dev.yml"
   "examples/Dockerfile"
   "examples/.dockerignore"
   "examples/docker-compose.yml"
@@ -90,6 +113,18 @@ REQUIRED_FILES=(
   "examples/ci.yml"
   "examples/.commitlintrc.json"
   "examples/.coderabbit.yaml"
+  # Phase 13b new files
+  "scaffold.sh"
+  "RATIONALE.md"
+  "docs/architecture/decisions/ADR-002-clone-script-scaffolding.md"
+  "test/scaffold-e2e.sh"
+  "examples/initializr-seed/build.gradle.kts"
+  "examples/initializr-seed/settings.gradle.kts"
+  "examples/initializr-seed/gradlew"
+  "examples/initializr-seed/src/main/java/com/example/template/TemplateApplication.java"
+  "examples/support/response/ApiResponse.java"
+  "examples/support/response/ResultType.java"
+  "examples/core/api/support/ApiControllerAdvice.java"
 )
 
 MISSING=0
@@ -285,6 +320,143 @@ if [ -f "$TEMPLATE_DIR/examples/dependabot.yml" ]; then
   pass "V17b" "examples/dependabot.yml exists"
 else
   fail "V17b" "examples/dependabot.yml missing"
+fi
+
+# ────────────────────────────────────────────────────────────────
+# Phase 13b validators (V18-V22): scaffold.sh + clone-script architecture
+# ────────────────────────────────────────────────────────────────
+
+echo ""
+echo "=== V18: scaffold.sh executable + --help ==="
+if [ -x "$TEMPLATE_DIR/scaffold.sh" ]; then
+  pass "V18a" "scaffold.sh is executable"
+else
+  fail "V18a" "scaffold.sh missing or not executable"
+fi
+if "$TEMPLATE_DIR/scaffold.sh" --help >/dev/null 2>&1; then
+  pass "V18b" "scaffold.sh --help exits 0"
+else
+  fail "V18b" "scaffold.sh --help failed"
+fi
+
+echo ""
+echo "=== V19: scaffold.sh rejects bad input ==="
+# V13a: hyphen-case validation (rejects upper/underscore)
+if ! "$TEMPLATE_DIR/scaffold.sh" --project-name "BAD_CASE" --base-package com.acme.foo >/dev/null 2>&1; then
+  pass "V19a" "scaffold.sh rejects upper-case + underscore --project-name"
+else
+  fail "V19a" "scaffold.sh accepted invalid --project-name 'BAD_CASE'"
+fi
+# V13b: dotted lowercase validation (rejects hyphen in package)
+if ! "$TEMPLATE_DIR/scaffold.sh" --project-name my-app --base-package com-acme-foo >/dev/null 2>&1; then
+  pass "V19b" "scaffold.sh rejects hyphen in --base-package"
+else
+  fail "V19b" "scaffold.sh accepted invalid --base-package 'com-acme-foo'"
+fi
+# V13c: --doc-modules must include 'core'
+if ! "$TEMPLATE_DIR/scaffold.sh" --project-name my-app --base-package com.acme.foo --doc-modules reports >/dev/null 2>&1; then
+  pass "V19c" "scaffold.sh requires 'core' in --doc-modules"
+else
+  fail "V19c" "scaffold.sh accepted --doc-modules without 'core'"
+fi
+# V13d: --project-name required
+if ! "$TEMPLATE_DIR/scaffold.sh" --base-package com.acme.foo >/dev/null 2>&1; then
+  pass "V19d" "scaffold.sh requires --project-name"
+else
+  fail "V19d" "scaffold.sh accepted invocation without --project-name"
+fi
+# V13e: --base-package required
+if ! "$TEMPLATE_DIR/scaffold.sh" --project-name my-app >/dev/null 2>&1; then
+  pass "V19e" "scaffold.sh requires --base-package"
+else
+  fail "V19e" "scaffold.sh accepted invocation without --base-package"
+fi
+
+echo ""
+echo "=== V20: test/scaffold-e2e.sh + initializr-seed presence ==="
+if [ -f "$TEMPLATE_DIR/test/scaffold-e2e.sh" ]; then
+  pass "V20a" "test/scaffold-e2e.sh present"
+else
+  fail "V20a" "test/scaffold-e2e.sh missing"
+fi
+if [ -d "$TEMPLATE_DIR/examples/initializr-seed" ]; then
+  pass "V20b" "examples/initializr-seed/ directory present"
+else
+  fail "V20b" "examples/initializr-seed/ missing"
+fi
+if [ -f "$TEMPLATE_DIR/examples/initializr-seed/build.gradle.kts" ]; then
+  pass "V20c" "initializr-seed has build.gradle.kts"
+else
+  fail "V20c" "initializr-seed/build.gradle.kts missing"
+fi
+if [ -f "$TEMPLATE_DIR/examples/initializr-seed/gradlew" ]; then
+  pass "V20d" "initializr-seed has gradlew"
+else
+  fail "V20d" "initializr-seed/gradlew missing"
+fi
+# Verify initializr-seed gradlew is staged as 100755 (exec bit baked into git index)
+SEED_GRADLEW_MODE=$(git -C "$TEMPLATE_DIR" ls-files --stage examples/initializr-seed/gradlew 2>/dev/null | awk '{print $1}')
+if [ "$SEED_GRADLEW_MODE" = "100755" ]; then
+  pass "V20e" "initializr-seed/gradlew staged as 100755 in git index"
+else
+  fail "V20e" "initializr-seed/gradlew NOT staged as 100755 (got: '$SEED_GRADLEW_MODE')"
+fi
+if [ -d "$TEMPLATE_DIR/examples/initializr-seed/src/main/java/com/example/template" ]; then
+  pass "V20f" "initializr-seed has com.example.template package dir"
+else
+  fail "V20f" "initializr-seed/src/main/java/com/example/template/ missing"
+fi
+
+echo ""
+echo "=== V21: RATIONALE.md + ADR-002 ==="
+if [ -f "$TEMPLATE_DIR/RATIONALE.md" ]; then
+  pass "V21a" "RATIONALE.md present"
+else
+  fail "V21a" "RATIONALE.md missing"
+fi
+if grep -q "PowerShell Silent-No-Op" "$TEMPLATE_DIR/RATIONALE.md" 2>/dev/null; then
+  pass "V21b" "RATIONALE.md has 'PowerShell Silent-No-Op' section"
+else
+  fail "V21b" "RATIONALE.md missing 'PowerShell Silent-No-Op' section"
+fi
+if grep -q "Empirical Test Matrix" "$TEMPLATE_DIR/RATIONALE.md" 2>/dev/null; then
+  pass "V21c" "RATIONALE.md has 'Empirical Test Matrix'"
+else
+  fail "V21c" "RATIONALE.md missing 'Empirical Test Matrix'"
+fi
+if [ -f "$TEMPLATE_DIR/docs/architecture/decisions/ADR-002-clone-script-scaffolding.md" ]; then
+  pass "V21d" "ADR-002-clone-script-scaffolding.md present"
+else
+  fail "V21d" "ADR-002-clone-script-scaffolding.md missing"
+fi
+if grep -q "Status: Accepted" "$TEMPLATE_DIR/docs/architecture/decisions/ADR-002-clone-script-scaffolding.md" 2>/dev/null; then
+  pass "V21e" "ADR-002 has 'Status: Accepted'"
+else
+  fail "V21e" "ADR-002 missing 'Status: Accepted'"
+fi
+
+echo ""
+echo "=== V22: scaffold.sh interpreter guard (Fix 8 / Phase 13 Python lineage) ==="
+# STATIC-ONLY check. NEVER invoke scaffold.sh from validate.sh — would scaffold
+# the template in place. Runtime verification belongs in test/scaffold-e2e.sh.
+GUARD_RE='\[ -z.*BASH_VERSION'
+if grep -qE "$GUARD_RE" "$TEMPLATE_DIR/scaffold.sh"; then
+  pass "V22a" "scaffold.sh contains [ -z ... BASH_VERSION ] guard"
+else
+  fail "V22a" "scaffold.sh missing active BASH_VERSION guard — silent-success risk"
+fi
+GUARD_LINE=$(grep -nE "$GUARD_RE" "$TEMPLATE_DIR/scaffold.sh" | head -1 | cut -d: -f1)
+SET_LINE=$(grep -nE '^set -euo pipefail' "$TEMPLATE_DIR/scaffold.sh" | head -1 | cut -d: -f1)
+if [ -n "$GUARD_LINE" ] && [ -n "$SET_LINE" ] && [ "$GUARD_LINE" -lt "$SET_LINE" ]; then
+  pass "V22b" "BASH_VERSION guard precedes 'set -euo pipefail' (line $GUARD_LINE < $SET_LINE)"
+else
+  fail "V22b" "BASH_VERSION guard must precede 'set -euo pipefail' (guard=$GUARD_LINE set=$SET_LINE)"
+fi
+# V22c: $BASH basename check (M-03 env-injection hardening)
+if grep -qE '\$\{BASH##\*/\}' "$TEMPLATE_DIR/scaffold.sh"; then
+  pass "V22c" "scaffold.sh has \$BASH basename check (env-injection hardening)"
+else
+  fail "V22c" "scaffold.sh missing \$BASH basename check — PowerShell env-injection bypass possible"
 fi
 
 echo ""

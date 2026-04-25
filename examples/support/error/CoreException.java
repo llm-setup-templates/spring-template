@@ -1,4 +1,4 @@
-package com.example.demo.support.error;
+package {{BASE_PACKAGE}}.support.error;
 
 public class CoreException extends RuntimeException {
     private final ErrorType errorType;

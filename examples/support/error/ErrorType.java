@@ -1,4 +1,4 @@
-package com.example.demo.support.error;
+package {{BASE_PACKAGE}}.support.error;
 
 import org.springframework.http.HttpStatus;
 
