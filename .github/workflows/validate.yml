@@ -15,7 +15,7 @@ jobs:
     name: Static verification (validate.sh)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run validate.sh
         run: bash validate.sh
@@ -36,7 +36,7 @@ jobs:
           - 'core,reports,briefings,extended'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up JDK 17 (Temurin)
         uses: actions/setup-java@v4
