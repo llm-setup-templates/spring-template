@@ -238,11 +238,12 @@ TEMPLATE_ONLY=(
   validate.sh
   .github/workflows/validate.yml
   .github/dependabot.yml
-  examples/dependabot.yml
   test
   RATIONALE.md
   CODERABBIT-PROMPT-GUIDE.md
   docs/architecture/decisions/ADR-002-clone-script-scaffolding.md
+  # examples/dependabot.yml : KEEP until Stage F — Stage C copies it to .github/dependabot.yml
+  #                           (Stage F's `rm -rf examples` removes it automatically)
   # .claude/ : KEEP — derived repo reuses agent rules
   # examples/ : KEEP until Stage F
   # scaffold.sh : self-delete in Stage H
