@@ -5,9 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # Phase 13b: weekly Mon 12:00 UTC — catches Initializr seed staleness
+    # (Spring Boot version drift) before users hit it.
+    - cron: '0 12 * * 1'
 
 jobs:
-  validate:
+  validate-static:
     name: Static verification (validate.sh)
     runs-on: ubuntu-latest
     steps:
@@ -15,3 +19,33 @@ jobs:
 
       - name: Run validate.sh
         run: bash validate.sh
+
+  scaffold-e2e:
+    name: scaffold-e2e (${{ matrix.doc-modules }})
+    runs-on: ubuntu-latest
+    needs: validate-static
+    timeout-minutes: 15  # Round 3 R3-CX-6: matrix runtime safety guard
+    strategy:
+      fail-fast: false
+      matrix:
+        doc-modules:
+          - 'core'
+          - 'core,reports'
+          - 'core,briefings'
+          - 'core,extended'
+          - 'core,reports,briefings,extended'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle (cached)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run scaffold-e2e for doc-modules=${{ matrix.doc-modules }}
+        run: bash test/scaffold-e2e.sh "${{ matrix.doc-modules }}"
