@@ -125,9 +125,13 @@ fi
 test -d .claude/rules || { echo "FAIL: .claude/rules missing"; exit 1; }
 
 # 4. Placeholder leak (CRITICAL — Reality + Runtime Contract Lens)
-LEAKS=$(grep -rE '\{\{[A-Z_]+\}\}' . --include="*.java" --include="*.kts" --include="*.yml" --include="*.json" --include="*.xml" --include="*.md" 2>/dev/null || true)
+# Note: *.md NOT included in general scan because SETUP.md (template-side guide
+# left in derived repo per Phase 13 Python pattern) intentionally shows
+# placeholders in its Appendix B as examples. CLAUDE.md is checked separately
+# in Step 8 below for {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}} specifically.
+LEAKS=$(grep -rE '\{\{[A-Z_]+\}\}' . --include="*.java" --include="*.kts" --include="*.yml" --include="*.json" --include="*.xml" 2>/dev/null || true)
 if [ -n "$LEAKS" ]; then
-  echo "FAIL: placeholder leak detected:"
+  echo "FAIL: placeholder leak detected (code/config files):"
   echo "$LEAKS"
   exit 1
 fi
