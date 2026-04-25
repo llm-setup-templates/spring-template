@@ -1,8 +1,8 @@
-package com.example.demo.core.api.support;
+package {{BASE_PACKAGE}}.core.api.support;
 
-import com.example.demo.support.error.CoreException;
-import com.example.demo.support.error.ErrorType;
-import com.example.demo.support.response.ApiResponse;
+import {{BASE_PACKAGE}}.support.error.CoreException;
+import {{BASE_PACKAGE}}.support.error.ErrorType;
+import {{BASE_PACKAGE}}.support.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

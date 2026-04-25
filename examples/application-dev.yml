@@ -14,5 +14,5 @@ spring:
 logging:
   level:
     root: INFO
-    com.example: DEBUG
+    {{BASE_PACKAGE}}: DEBUG
     org.hibernate.SQL: DEBUG
