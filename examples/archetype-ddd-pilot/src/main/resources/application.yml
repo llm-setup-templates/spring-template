@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: archetype-ddd-pilot
+  datasource:
+    # Testcontainers @ServiceConnection auto-injects in tests.
+    # For local run: provide POSTGRES_URL / POSTGRES_USER / POSTGRES_PASSWORD env or override.
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/archetype_ddd_pilot}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
