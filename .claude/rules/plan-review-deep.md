@@ -49,7 +49,7 @@ The schema below is the binding contract between this rules file and `validate.s
 
 **Purpose**: prevent `validate.sh` / `scaffold.sh` / `SETUP.md` from accreting beyond their per-template line budget without an explicit ratchet (Section 4).
 
-**Contract** (9 actual lines of bash, executed at the top of `validate.sh` after the seed echo): a `for spec in "validate.sh:N1" "scaffold.sh:N2"` loop that reads `wc -l` of each file and exits 1 with `FAIL: V0a $f has $n lines (limit $limit). 14a 자체 ratchet 금지 — STOP and request R5 refine.` on violation. Then a separate `wc -l < SETUP.md` block: `<= hard` exits 1, `<= soft` emits `WARN`. Per-template limits are the only values that may differ between templates.
+**Contract** (9 actual lines of bash, executed at the top of `validate.sh` after the seed echo): a `for spec in "validate.sh:N1" "scaffold.sh:N2"` loop that reads `wc -l` of each file and exits 1 with `FAIL: V0a $f has $n lines (limit $limit). 14a self-ratchet forbidden -- STOP and open a new review round.` on violation. Then a separate `wc -l < SETUP.md` block: `<= hard` exits 1, `<= soft` emits `WARN`. Per-template limits are the only values that may differ between templates.
 
 **Per-template values** (Phase 14a rev.6 R5-corrected): spring `validate:560 / scaffold:500 / SETUP 220 soft / 260 hard` ; python `validate:400 / scaffold:395 / SETUP 220 soft / 250 hard` ; typescript `validate:570 / scaffold:490 / SETUP 220 soft / 260 hard`.
 
@@ -57,7 +57,7 @@ The schema below is the binding contract between this rules file and `validate.s
 
 **Purpose**: ensure `SETUP.md` §0 contains the 5 strict items of Section 3 below — fail-closed before any V1+ verify runs.
 
-**Contract** (11 actual lines of bash): one `grep -q '^## §0 Phase 0: System Overview'` header check + one `grep -q '^` ` `mermaid'` block check + a `for node in clone scaffold verify ci; do grep -qE "(^|[^[:alnum:]_-])${node}([^[:alnum:]_-]|$)" SETUP.md; done` 4-iteration word-boundary check + one `grep -q 'Change blast radius'` ENV column check + a `for h in 'Adding a new archetype' '...'; do grep -q "^### ${h}" SETUP.md; done` 4-iteration BRE heading check. Each missing item exits 1 with explicit `FAIL: V0e ...` message. Word-boundary for the 4 core nodes is required because `ci` is a substring of `initializr`.
+**Contract** (11 actual lines of bash): one `grep -q '^## Phase 0: System Overview'` header check + one `grep -q '^` ` `mermaid'` block check + a `for node in clone scaffold verify ci; do grep -qE "(^|[^[:alnum:]_-])${node}([^[:alnum:]_-]|$)" SETUP.md; done` 4-iteration word-boundary check + one `grep -q 'Change blast radius'` ENV column check + a `for h in 'Adding a new archetype' '...'; do grep -q "^### ${h}" SETUP.md; done` 4-iteration BRE heading check. Each missing item exits 1 with explicit `FAIL: V0e ...` message. Word-boundary for the 4 core nodes is required because `ci` is a substring of `initializr`. Phase 14a R6 ASCII canonical: heading literal contains no `§` (was `## §0 Phase 0: System Overview` before R6) so source bytes are pure ASCII -- ensures compatibility with templates that enforce ASCII-only-source guards (e.g. typescript-template V23).
 
 ### V_seed Worked example seed
 
@@ -71,9 +71,9 @@ The schema below is the binding contract between this rules file and `validate.s
 
 ## 3. §0 schema 5 strict items
 
-`SETUP.md` of every template MUST contain a `## §0 Phase 0: System Overview` section with the following 5 items, in order. V0e (Section 2) verifies each item. Updates to `SETUP.md` §0 schema MUST be paired with a V0e update in the same PR (Q5 LOCK fail-closed semantics).
+`SETUP.md` of every template MUST contain a `## Phase 0: System Overview` section with the following 5 items, in order. V0e (Section 2) verifies each item. Updates to `SETUP.md` Phase 0 schema MUST be paired with a V0e update in the same PR (Q5 LOCK fail-closed semantics). Phase 14a R6 ASCII canonical: heading dropped the `§` prefix (was `## §0 ...` before R6) so the heading is pure ASCII -- compatible with templates that enforce ASCII-only-source guards.
 
-(a) **Header**: a level-2 heading exactly `## §0 Phase 0: System Overview`. No translation, no decoration, no extra spaces.
+(a) **Header**: a level-2 heading exactly `## Phase 0: System Overview`. No translation, no decoration, no extra spaces.
 
 (b) **Mermaid block**: an opening fence ` ```mermaid ` (BRE-anchored at start of line) followed by a Mermaid diagram before any other code block. `flowchart` or `graph` direction is up to the template.
 

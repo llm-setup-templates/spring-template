@@ -4,7 +4,7 @@
 > with a green CI pipeline. See [ADR-002](docs/architecture/decisions/ADR-002-clone-script-scaffolding.md)
 > for the architecture rationale.
 
-## §0 Phase 0: System Overview
+## Phase 0: System Overview
 
 > This template is designed for LLM agents to extend autonomously.
 
