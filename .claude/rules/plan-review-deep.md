@@ -43,25 +43,47 @@ PASS counter convention: each subfacet emits a single `=== F1.x ... ===` header 
 
 ## 2. V0a / V0e / V_seed schema contract
 
-> [Reified by Task T2 in this PR. The schema below is the binding contract between this rules file and `validate.sh` of all 3 templates — no deviation without ratchet (Section 4).]
+The schema below is the binding contract between this rules file and `validate.sh` of all 3 templates. Per-template variation is allowed only on the values explicitly tagged "per-template" — the surrounding code structure must remain byte-identical (cross-template structure diff is part of Tier 2 manual review).
 
 ### V0a Self-monolithic guard
 
+**Purpose**: prevent `validate.sh` / `scaffold.sh` / `SETUP.md` from accreting beyond their per-template line budget without an explicit ratchet (Section 4).
+
+**Contract** (9 actual lines of bash, executed at the top of `validate.sh` after the seed echo): a `for spec in "validate.sh:N1" "scaffold.sh:N2"` loop that reads `wc -l` of each file and exits 1 with `FAIL: V0a $f has $n lines (limit $limit). 14a 자체 ratchet 금지 — STOP and request R5 refine.` on violation. Then a separate `wc -l < SETUP.md` block: `<= hard` exits 1, `<= soft` emits `WARN`. Per-template limits are the only values that may differ between templates.
+
+**Per-template values** (Phase 14a rev.6 R5-corrected): spring `validate:560 / scaffold:500 / SETUP 220 soft / 260 hard` ; python `validate:400 / scaffold:395 / SETUP 220 soft / 250 hard` ; typescript `validate:570 / scaffold:490 / SETUP 220 soft / 260 hard`.
+
 ### V0e §0 anchor guard
 
+**Purpose**: ensure `SETUP.md` §0 contains the 5 strict items of Section 3 below — fail-closed before any V1+ verify runs.
+
+**Contract** (11 actual lines of bash): one `grep -q '^## §0 Phase 0: System Overview'` header check + one `grep -q '^` ` `mermaid'` block check + a `for node in clone scaffold verify ci; do grep -qE "(^|[^[:alnum:]_-])${node}([^[:alnum:]_-]|$)" SETUP.md; done` 4-iteration word-boundary check + one `grep -q 'Change blast radius'` ENV column check + a `for h in 'Adding a new archetype' '...'; do grep -q "^### ${h}" SETUP.md; done` 4-iteration BRE heading check. Each missing item exits 1 with explicit `FAIL: V0e ...` message. Word-boundary for the 4 core nodes is required because `ci` is a substring of `initializr`.
+
 ### V_seed Worked example seed
+
+**Purpose**: ensure the canonical entry seed file exists, has no stub phrases, and has a minimum number of lines — preventing a template from shipping a hollow archetype.
+
+**Contract** (5 actual lines of bash): one `find <archetype seed dir> -name '<canonical filename>' | sort | head -1 || true` discovery + one `[[ -n "$seed" && -f "$seed" ]]` existence check + one `grep -qE '<per-template stub regex>' "$seed" && fail` stub-phrase blocker + one `[[ $(wc -l < "$seed") -ge <N> ]]` minimum-lines check. `sort | head -1` is required for deterministic selection across filesystems. `|| true` is required to keep `pipefail` shells from misclassifying broken pipe as failure.
+
+**Per-template values**: spring `find examples/initializr-seed/src/main/java -name 'TemplateApplication.java'` + stub `(// TODO|UnsupportedOperationException|NotImplementedException|throw new RuntimeException\("not implemented"\))` + `≥3 lines` ; python `find examples/archetype-fastapi/src -name '*.py' -path '*/handlers/*'` + stub `^[[:space:]]*(pass|raise NotImplementedError\b.*|\.\.\.)[[:space:]]*$` + `≥5 lines` ; typescript `find examples/archetype-next/seed/src/app -name 'page.tsx'` + stub `(return null;|throw new Error\("Not implemented"\))` + `≥5 lines`.
 
 ---
 
 ## 3. §0 schema 5 strict items
 
-> [Reified by Task T2 in this PR. The 5 items below are the contract between `SETUP.md` of all 3 templates and `V0e`.]
+`SETUP.md` of every template MUST contain a `## §0 Phase 0: System Overview` section with the following 5 items, in order. V0e (Section 2) verifies each item. Updates to `SETUP.md` §0 schema MUST be paired with a V0e update in the same PR (Q5 LOCK fail-closed semantics).
 
-(a)
-(b)
-(c)
-(d)
-(e)
+(a) **Header**: a level-2 heading exactly `## §0 Phase 0: System Overview`. No translation, no decoration, no extra spaces.
+
+(b) **Mermaid block**: an opening fence ` ```mermaid ` (BRE-anchored at start of line) followed by a Mermaid diagram before any other code block. `flowchart` or `graph` direction is up to the template.
+
+(c) **4 core nodes**: the Mermaid diagram MUST reference 4 named nodes: `clone`, `scaffold`, `verify`, `ci`. V0e checks each as a word-boundary token (substring matches like `ci` ⊂ `initializr` MUST NOT pass). The scaffold subgraph (per-template archetype list) is allowed but does not satisfy this item by itself.
+
+(d) **ENV table with `Change blast radius` column**: a Markdown table whose header row contains the literal string `Change blast radius`. The table SHOULD enumerate environment dependencies (one row per variable / file / service) and rate the blast radius of changing each.
+
+(e) **Extension Points — 4 strict English headings**: four level-3 headings, in any order, with EXACT English text: `### Adding a new archetype`, `### Adding a new verify step`, `### Adding a new env dependency`, `### Phase E (DDD/TDD) stack hook`. Translations or punctuation variants do not satisfy V0e (which uses `grep -q` BRE — literal match).
+
+---
 
 ---
 
