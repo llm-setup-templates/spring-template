@@ -102,10 +102,11 @@ Optional:
 `validate.sh` presence as a freshness marker; if missing (because a previous
 scaffold run removed it), the script refuses to run and instructs you to re-clone.
 
-## 3. Archetype: Single (web-mvc)
+## 3. Archetype
 
-This template currently ships **one archetype**: production-grade Spring Boot
-web-MVC with:
+### 3.1 Default scaffold output: web-mvc (single)
+
+scaffold.sh produces **one archetype**: production-grade Spring Boot web-MVC with:
 
 - `src/main/java/<base-package>/` — layered architecture under your `--base-package`
 - `core/api/support/ApiControllerAdvice.java` — global exception handler
@@ -114,8 +115,11 @@ web-MVC with:
 - `config/AppProperties.java` — `@ConfigurationProperties(prefix = "app")` example
 - `src/test/java/<base-package>/architecture/ArchitectureTest.java` — 12 ArchUnit rules
 
-Archetype splits (batch / library / data) are tracked as Phase 14b candidates
-based on user demand. See [RATIONALE § archetype](./RATIONALE.md).
+Archetype splits (batch / library / data) are Phase 14b candidates. See [RATIONALE § archetype](./RATIONALE.md).
+
+### 3.2 Worked example: archetype-ddd-pilot (Phase E0)
+
+`examples/archetype-ddd-pilot/` is a **standalone learning artifact** demonstrating jMolecules + Spring Modulith + ArchUnit DDD rules + Classicist TDD with Testcontainers. **Removed by scaffold.sh Stage F** -- it does not appear in scaffolded output. To learn from it: `cd examples/archetype-ddd-pilot && ./gradlew test` (requires Docker for Testcontainers).
 
 ## 4. Publish to GitHub (optional)
 

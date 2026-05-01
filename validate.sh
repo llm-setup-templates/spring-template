@@ -39,6 +39,15 @@ seed=$(find examples/initializr-seed/src/main/java -name 'TemplateApplication.ja
 grep -qE '(// TODO|UnsupportedOperationException|NotImplementedException|throw new RuntimeException\("not implemented"\))' "$seed" && { echo "FAIL: V_seed stub phrase in $seed"; exit 1; }
 [[ $(wc -l < "$seed") -ge 3 ]] || { echo "FAIL: V_seed $seed has < 3 lines"; exit 1; }
 
+echo "=== V_seed-ddd Phase E0 archetype seed (Phase E entry) ==="
+ddd_seed=$(find examples/archetype-ddd-pilot/src/main/java -name 'TemplateApplication.java' 2>/dev/null | sort | head -1 || true)
+[[ -n "$ddd_seed" && -f "$ddd_seed" ]] || { echo "FAIL: V_seed-ddd missing archetype-ddd-pilot/TemplateApplication.java"; exit 1; }
+grep -q '@Modulithic' "$ddd_seed" || { echo "FAIL: V_seed-ddd $ddd_seed missing @Modulithic annotation"; exit 1; }
+[[ -f examples/archetype-ddd-pilot/build.gradle.kts ]] || { echo "FAIL: V_seed-ddd build.gradle.kts missing"; exit 1; }
+grep -q 'jmolecules-ddd' examples/archetype-ddd-pilot/build.gradle.kts || { echo "FAIL: V_seed-ddd build.gradle.kts missing jmolecules-ddd"; exit 1; }
+grep -q 'jmolecules-events' examples/archetype-ddd-pilot/build.gradle.kts || { echo "FAIL: V_seed-ddd build.gradle.kts missing jmolecules-events (R3 CX-19)"; exit 1; }
+grep -q 'spring-modulith-starter-core' examples/archetype-ddd-pilot/build.gradle.kts || { echo "FAIL: V_seed-ddd missing spring-modulith-starter-core"; exit 1; }
+
 echo "=== spring-template placeholder leak check ==="
 
 # Check config/code files for unreplaced placeholders.
