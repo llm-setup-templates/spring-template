@@ -496,6 +496,42 @@ else
   fail "V22c" "scaffold.sh missing \$BASH basename check — PowerShell env-injection bypass possible"
 fi
 
+# === V_drift: cross-drift schema guard (14a-bis Phase, rev.6 -- R3+CX3+R4-A fixes) ===
+echo "=== V_drift: 5-keyword + line count + negation + SHA256 ==="
+v_drift_failed=0
+vdrift_root="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+# Step 1+1b: extract Section 5 body + narrow to numbered 5-line checklist (CX2-2: || true)
+section5_body=$(awk '/^## 5\. Phase E entry rubric$/ { f=1; next } f && /^## 6\./ { exit } f { print }' "$vdrift_root/.claude/rules/plan-review-deep.md" 2>/dev/null | tr -d '\r' || true)
+[ -n "$section5_body" ] || { echo "FAIL: V_drift Section 5 extraction failed (header missing)"; v_drift_failed=1; }
+section5_checklist=$(printf '%s\n' "$section5_body" | grep -E '^[1-5]\. (Flexibility|Universality|Convention precedence|Contract test specifications|Opt-in examples)' || true)
+section5_checklist_count=$(printf '%s\n' "$section5_checklist" | grep -c '^[1-5]\. ' || true)
+[ "$section5_checklist_count" -eq 5 ] || { echo "FAIL: V_drift Section 5 numbered checklist count $section5_checklist_count (expected 5)"; v_drift_failed=1; }
+# Step 2: extract Phase E hook body
+hook_body=$(awk '/^### Phase E \(DDD\/TDD\) stack hook$/ { f=1; next } f && /^---$/ { exit } f && /^### / { exit } f { print }' "$vdrift_root/SETUP.md" 2>/dev/null | tr -d '\r' || true)
+[ -n "$hook_body" ] || { echo "FAIL: V_drift Phase E hook body extraction failed"; v_drift_failed=1; }
+# Step 3: 5-keyword presence (both locations)
+for kw in "flexibility" "universality" "convention precedence" "contract test specifications" "opt-in examples"; do
+    printf '%s\n' "$section5_checklist" | grep -iq "$kw" || { echo "FAIL: V_drift keyword '$kw' missing in Section 5 checklist"; v_drift_failed=1; }
+    printf '%s\n' "$hook_body" | grep -iq "$kw" || { echo "FAIL: V_drift keyword '$kw' missing in Phase E hook body"; v_drift_failed=1; }
+done
+# Step 4: hook body non-empty line count == 5
+hook_line_count=$(printf '%s\n' "$hook_body" | grep -cv '^[[:space:]]*$' || true)
+[ "$hook_line_count" -eq 5 ] || { echo "FAIL: V_drift Phase E hook body line count $hook_line_count (expected 5)"; v_drift_failed=1; }
+# Step 5: negation-marker probe (CX-3: both locations; R1-03: noun follow-up) -- POSIX ERE, no \b
+# R3-01 fix: || true terminator -- spring set -e exits on grep -q no-match (happy path) without it
+negation_pattern='(must not|forbidden|denied|(no|not|never)[[:space:]]+(edits|changes|allowed|expressible|permitted|required))'
+printf '%s\n' "$section5_checklist" | grep -iEq "$negation_pattern" && { echo "FAIL: V_drift negation marker in Section 5 checklist (semantic inversion)"; v_drift_failed=1; } || true
+printf '%s\n' "$hook_body" | grep -iEq "$negation_pattern" && { echo "FAIL: V_drift negation marker in Phase E hook body (semantic inversion)"; v_drift_failed=1; } || true
+# Step 6: emit SHA256 -- gated on extraction + checklist count success (R2-02/CX2-9 fix: prevents misleading hash-of-empty-string emit)
+section5_hash="EXTRACT_FAILED"; [ -n "$section5_body" ] && [ "$section5_checklist_count" -eq 5 ] && section5_hash=$(printf '%s' "$section5_body" | sha256sum 2>/dev/null | awk '{print $1}')
+hook_hash="EXTRACT_FAILED"; [ -n "$hook_body" ] && [ "$hook_line_count" -eq 5 ] && hook_hash=$(printf '%s' "$hook_body" | sha256sum 2>/dev/null | awk '{print $1}')
+echo "Section 5 SHA256: $section5_hash"
+echo "Phase E hook body SHA256: $hook_hash"
+# GHA job summary append (CX2-7 fix: PR description paste source explicit)
+[ -n "${GITHUB_STEP_SUMMARY:-}" ] && { printf -- "### V_drift hashes (paste into Phase E PR description)\n- Section 5 SHA256: \`%s\`\n- Phase E hook body SHA256: \`%s\`\n" "$section5_hash" "$hook_hash" >> "$GITHUB_STEP_SUMMARY"; } || true
+[ "$v_drift_failed" -eq 0 ] || exit 1
+echo "V_drift PASS"
+
 echo ""
 echo "======================================="
 echo "RESULTS: $PASS passed, $FAIL failed"

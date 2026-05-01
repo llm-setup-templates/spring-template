@@ -112,7 +112,7 @@ A ratchet is a deliberate, documented raise of a per-template threshold (V0a `va
 
 Phase E (DDD/TDD 3-template stack — jMolecules / hexagonal / FSD-DDD) entry is gated by the 3-axis rubric below. Phase 14a-bis is the **separate** Phase that authors this rubric in detail; this Section is a normative summary only.
 
-**14a-bis 5-line meaning checklist** (Phase E hook body, one line each, MUST be byte-identical to the 14a-bis canonical version of the same checklist):
+**14a-bis 5-line meaning checklist** (Phase E hook body, one line each; the 14a-bis canonical version preserves the same 5 keywords listed below):
 1. Flexibility: small UL/BC edits (2-3 words or additions) allowed; core domain redefinition requires a new project.
 2. Universality: rule semantics MUST be expressible in terms common to all 3 stacks (Spring/Python/TS).
 3. Convention precedence: per-stack idiom > shared abstraction when they conflict — convention wins, abstractions are opt-in.
@@ -124,7 +124,7 @@ Phase E (DDD/TDD 3-template stack — jMolecules / hexagonal / FSD-DDD) entry is
 - **Universality**: what must hold across all 3 templates (V0a/V0e/V_seed schema, §0 5 strict items, F1 4 subfacets).
 - **Convention precedence**: when stack convention conflicts with shared abstraction, convention wins; the shared abstraction becomes opt-in.
 
-**Cross-drift policy** (Phase 14a R4 CX4-6): the 5-line meaning checklist above and the 14a-bis canonical version of the same checklist are a single source of truth. Any update to one MUST update the other byte-identically in the same PR. If a drift surfaces (e.g., a Phase E PR changes 14a-bis but not this Section 5), the policy is to **reconcile against the spring-template `plan-review-deep.md` Section 5** as canonical and re-issue the 14a-bis update accordingly.
+**Cross-drift policy** (Phase 14a R4 CX4-6, refined by 14a-bis Q1=B K3 LOCK): the 5-line meaning checklist above and the 14a-bis canonical version of the same checklist are a single source of truth. Any update to one MUST update the other with the 5 keywords (flexibility / universality / convention precedence / contract test specifications / opt-in examples) preserved in the same PR; the V_drift CI guard (validate.sh) enforces 5-keyword presence + 5-line count + negation-marker absence. If a drift surfaces (e.g., a Phase E PR changes 14a-bis but not this Section 5), the policy is to **reconcile against the spring-template `plan-review-deep.md` Section 5** as canonical and re-issue the 14a-bis update accordingly.
 
 ---
 
