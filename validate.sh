@@ -3,7 +3,7 @@ set -e
 
 TEMPLATE_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# F1 4 subfacet acceptance — see .claude/rules/plan-review-deep.md §1
+# F1 4 subfacet acceptance -- see .claude/rules/plan-review-deep.md Section 1
 # Each subfacet's verification is the corresponding V/scaffold-e2e block
 # below. CI source-greps `echo "=== F1.x ...` to count 4 headers (F1.a-F1.d).
 echo "=== F1.a Reproducible Failure ==="
@@ -15,21 +15,21 @@ echo "=== V0a Self-monolithic guard ==="
 for spec in "validate.sh:560" "scaffold.sh:500"; do
   f="${spec%%:*}"; limit="${spec##*:}"
   n=$(wc -l < "$f")
-  [[ $n -le $limit ]] || { echo "FAIL: V0a $f has $n lines (limit $limit). 14a 자체 ratchet 금지 — STOP and request R5 refine."; exit 1; }
+  [[ $n -le $limit ]] || { echo "FAIL: V0a $f has $n lines (limit $limit). 14a self-ratchet forbidden -- STOP and open a new review round."; exit 1; }
 done
 n=$(wc -l < SETUP.md)
 [[ $n -le 260 ]] || { echo "FAIL: V0a SETUP.md has $n lines (limit 260)."; exit 1; }
 [[ $n -le 220 ]] || echo "WARN: V0a SETUP.md has $n lines (soft 220; hard 260). Action required before next PR merge."
 
-echo "=== V0e §0 schema guard ==="
-grep -q '^## §0 Phase 0: System Overview' SETUP.md || { echo "FAIL: V0e §0 header missing"; exit 1; }
+echo "=== V0e Phase 0 schema guard ==="
+grep -q '^## Phase 0: System Overview' SETUP.md || { echo "FAIL: V0e Phase 0 header missing"; exit 1; }
 grep -q '^```mermaid' SETUP.md || { echo "FAIL: V0e Mermaid block missing"; exit 1; }
 for node in clone scaffold verify ci; do
   grep -qE "(^|[^[:alnum:]_-])${node}([^[:alnum:]_-]|$)" SETUP.md || { echo "FAIL: V0e core node ${node} missing"; exit 1; }
 done
 grep -q 'Change blast radius' SETUP.md || { echo "FAIL: V0e ENV column 'Change blast radius' missing"; exit 1; }
 for h in 'Adding a new archetype' 'Adding a new verify step' 'Adding a new env dependency' 'Phase E (DDD/TDD) stack hook'; do
-  # NOTE: Use grep -q (BRE) NOT grep -qE — heading text contains literal `(`, `)`, `/`
+  # NOTE: Use grep -q (BRE) NOT grep -qE -- heading text contains literal `(`, `)`, `/`
   grep -q "^### ${h}" SETUP.md || { echo "FAIL: V0e Extension Points heading '${h}' missing"; exit 1; }
 done
 
