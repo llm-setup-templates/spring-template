@@ -35,7 +35,11 @@ Add a new `=== V<N> <name> ===` block to `validate.sh` AFTER V0a/V0e/V_seed and 
 Add a row to the ENV table above and rate its blast radius (low/medium/high). If required for `validate.sh` to run, add a presence guard at the top of `validate.sh`.
 
 ### Phase E (DDD/TDD) stack hook
-Phase E (jMolecules / hexagonal / FSD-DDD) entry is gated by the 14a-bis 5-line meaning checklist. See `.claude/rules/plan-review-deep.md` Section 5.
+1. Flexibility: small UL/BC edits (2-3 words or additions) allowed; core domain redefinition requires a new project.
+2. Universality: rule semantics MUST be expressible in terms common to all 3 stacks (Spring/Python/TS).
+3. Convention precedence: per-stack idiom > shared abstraction when they conflict -- convention wins, abstractions are opt-in.
+4. Contract test specifications: every cross-stack rule has an executable contract test in each template (no English-only enforcement).
+5. Opt-in examples / docs / CI only: examples + docs are opt-in; CI gates are opt-in unless a Phase explicitly opts a rule into the V0/V_seed contract.
 
 ---
 
