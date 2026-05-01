@@ -11,11 +11,11 @@ import com.example.template.support.error.CoreException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.event.RecordApplicationEvents;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -34,7 +34,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @Testcontainers
 @RecordApplicationEvents
+@Import(OrderServiceTest.TestConfig.class)
 class OrderServiceTest {
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        OrderCreatedListener orderCreatedListener() {
+            return new OrderCreatedListener();
+        }
+    }
+
 
     @Container
     @ServiceConnection
@@ -82,8 +92,9 @@ class OrderServiceTest {
     /**
      * AFTER_COMMIT TX-bound listener: counts events that survived commit.
      * R2 CX-10: rollback path leaves count at 0.
+     * Registered via TestConfig.@Bean above (no @Component because Spring
+     * cannot component-scan test class inner classes reliably).
      */
-    @Component
     static class OrderCreatedListener {
         private final AtomicInteger count = new AtomicInteger();
 
