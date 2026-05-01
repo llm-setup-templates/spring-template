@@ -89,13 +89,42 @@ The schema below is the binding contract between this rules file and `validate.s
 
 ## 4. Ratchet template
 
-> [Reified by Task T3 in this PR. Trigger conditions, standard PR body block, and Reality Lens re-verification rules.]
+A ratchet is a deliberate, documented raise of a per-template threshold (V0a `validate.sh` / `scaffold.sh` / `SETUP.md` limit). Phase 14a itself does NOT permit any same-PR ratchet — if Phase 14a code triggers V0a, the response is `STOP` and request an R5 (or later) refine round. Subsequent stack Phases (14b, 14c) MAY ratchet under the rules below.
+
+**Trigger conditions**
+- ≤10% raise vs current per-template threshold + same-PR + reviewer-approved → permitted.
+- >10% raise OR cross-template — separate PR, separate review.
+
+**Standard PR body block** — paste verbatim into the ratchet PR description:
+```
+### Ratchet — V0a `<file>` `<old>` → `<new>` (+<delta> lines, <+%>%)
+- Reason (Reality Lens): why the existing threshold is no longer adequate
+- Diff scope: what 14b / 14c addition pushed past the limit
+- Re-verify: post-merge `wc -l <file>` matches `<new>` ± 0
+- Reviewer: @<handle>
+```
+
+**Reality Lens re-verification** — every ratchet PR MUST include a `wc -l` capture in its description showing the actual line count after the new code lands. The capture command + its stdout MUST appear in the PR body before merge.
 
 ---
 
 ## 5. Phase E entry rubric
 
-> [Reified by Task T3 in this PR. 14a-bis 5-line meaning checklist + 3-axis (Flexibility / Universality / Convention precedence) summary + cross-drift policy.]
+Phase E (DDD/TDD 3-template stack — jMolecules / hexagonal / FSD-DDD) entry is gated by the 3-axis rubric below. Phase 14a-bis is the **separate** Phase that authors this rubric in detail; this Section is a normative summary only.
+
+**14a-bis 5-line meaning checklist** (Phase E hook body, one line each, MUST be byte-identical to the 14a-bis canonical version of the same checklist):
+1. Flexibility: small UL/BC edits (2-3 words or additions) allowed; core domain redefinition requires a new project.
+2. Universality: rule semantics MUST be expressible in terms common to all 3 stacks (Spring/Python/TS).
+3. Convention precedence: per-stack idiom > shared abstraction when they conflict — convention wins, abstractions are opt-in.
+4. Contract test specifications: every cross-stack rule has an executable contract test in each template (no English-only enforcement).
+5. Opt-in examples / docs / CI only: examples + docs are opt-in; CI gates are opt-in unless a Phase explicitly opts a rule into the V0/V_seed contract.
+
+**3-axis summary**
+- **Flexibility**: where templates may diverge (small edits, archetype-specific adapters).
+- **Universality**: what must hold across all 3 templates (V0a/V0e/V_seed schema, §0 5 strict items, F1 4 subfacets).
+- **Convention precedence**: when stack convention conflicts with shared abstraction, convention wins; the shared abstraction becomes opt-in.
+
+**Cross-drift policy** (Phase 14a R4 CX4-6): the 5-line meaning checklist above and the 14a-bis canonical version of the same checklist are a single source of truth. Any update to one MUST update the other byte-identically in the same PR. If a drift surfaces (e.g., a Phase E PR changes 14a-bis but not this Section 5), the policy is to **reconcile against the spring-template `plan-review-deep.md` Section 5** as canonical and re-issue the 14a-bis update accordingly.
 
 ---
 
