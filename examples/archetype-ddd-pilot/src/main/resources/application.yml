@@ -22,3 +22,8 @@ management:
     web:
       exposure:
         include: health,info
+
+# Spring Modulith: only @ApplicationModule-annotated packages are treated as modules.
+# Without this, core/support/order are all detected as modules, causing cross-module violations.
+spring.modulith:
+  detection-strategy: explicitly-annotated

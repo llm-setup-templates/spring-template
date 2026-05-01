@@ -13,7 +13,14 @@ class ApplicationModulesTest {
     void verifiesModuleStructure() {
         // R4 R4-H1/CX-30: ApplicationModules.of(Class).verify() -- void return, throws Violations on failure.
         ApplicationModules modules = ApplicationModules.of(TemplateApplication.class);
-        modules.verify();
+        try {
+            modules.verify();
+        } catch (org.springframework.modulith.core.Violations v) {
+            // Surface violation details to test output (debugging aid for CI).
+            System.err.println("=== Spring Modulith Violations ===");
+            System.err.println(v.getMessage());
+            throw v;
+        }
     }
 
     @Test
