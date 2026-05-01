@@ -4,6 +4,41 @@
 > with a green CI pipeline. See [ADR-002](docs/architecture/decisions/ADR-002-clone-script-scaffolding.md)
 > for the architecture rationale.
 
+## §0 Phase 0: System Overview
+
+> This template is designed for LLM agents to extend autonomously.
+
+```mermaid
+flowchart LR
+  clone --> scaffold --> verify --> ci
+  subgraph A["scaffold archetypes"]
+    initializr["initializr-seed"]
+  end
+  scaffold -.uses.-> A
+```
+
+| ENV / Dependency | Type | Default | Change blast radius |
+|---|---|---|---|
+| Java toolchain | runtime | Temurin 21 | high |
+| `BASE_PACKAGE` | scaffold param | required | medium |
+| `PROJECT_NAME` | scaffold param | required | low |
+| `.github/workflows/validate.yml` | CI workflow | committed | medium |
+| `.claude/rules/plan-review-deep.md` | governance | byte-identical 3 templates | high |
+
+### Adding a new archetype
+Add a directory under `examples/` and update `scaffold.sh` archetype dispatch + the archetypes subgraph above. Phase 14b is the canonical Phase for archetype expansion.
+
+### Adding a new verify step
+Add a new `=== V<N> <name> ===` block to `validate.sh` AFTER V0a/V0e/V_seed and BEFORE V1+. Update F1 echo headers if the step exposes a new failure surface. See `.claude/rules/plan-review-deep.md` Section 2.
+
+### Adding a new env dependency
+Add a row to the ENV table above and rate its blast radius (low/medium/high). If required for `validate.sh` to run, add a presence guard at the top of `validate.sh`.
+
+### Phase E (DDD/TDD) stack hook
+Phase E (jMolecules / hexagonal / FSD-DDD) entry is gated by the 14a-bis 5-line meaning checklist. See `.claude/rules/plan-review-deep.md` Section 5.
+
+---
+
 ## 1. Quick Start (three commands)
 
 ```bash
