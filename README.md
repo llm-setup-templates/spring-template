@@ -111,6 +111,19 @@ the extracted module.
 
 ---
 
+## Available skills
+
+Skills are Claude Code agent prompts in `.claude/skills/`. Each skill is invoked with `/skill-name`.
+
+- **`claude-md-reviewer`** (`.claude/skills/claude-md-reviewer/`) — Reviews CLAUDE.md for completeness and consistency.
+- **`tdd`** (`.claude/skills/tdd/`) — Test-driven development with red-green-refactor.
+  Vendored verbatim from mattpocock/skills (MIT). See `UPSTREAM.md` + `_local-addendum.md`.
+- **`office-hours-ddd-discovery`** (`.claude/skills/office-hours-ddd-discovery/`) —
+  Six forcing questions adapted for DDD bounded context discovery. Adapted from
+  garrytan/gstack (MIT). Companion: `docs/patterns/ddd-discovery-via-6q.md`.
+
+---
+
 ## Related templates
 
 - [python-template](https://github.com/llm-setup-templates/python-template) — Python 3.13 + 3 archetypes

@@ -86,3 +86,13 @@ PMs, founders, and future-you.
 
 See `_ADR-template.md` for the canonical structure and
 `.claude/rules/documentation.md` § ADR lifecycle for the full ruleset.
+
+## ADR Index
+
+| ADR | Title | Date | Status |
+|---|---|---|---|
+| ADR-001 | JaCoCo coverage threshold | 2026-04-23 | Accepted |
+| ADR-002 | Clone script scaffolding | 2026-04-25 | Accepted |
+| ADR-003 | Branch protection | 2026-05-01 | Accepted |
+| ADR-004 | Template governance rationale | 2026-05-01 | Accepted |
+| ADR-005 | Skill vendor policy | 2026-05-06 | Accepted |
