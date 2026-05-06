@@ -1,3 +1,6 @@
+// Domain layer no-mocking pattern: tests verify behavior through
+// public API of the aggregate, not implementation details. See
+// docs/patterns/ddd-tdd-cross-stack.md "Domain layer no-mocking" 섹션.
 package com.example.template.order.domain;
 
 import org.junit.jupiter.api.Test;
