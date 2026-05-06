@@ -43,3 +43,18 @@ If 3 stacks could share byte-identical contract test interfaces, the 3-template 
 - Obsidian: `Sources/sw-engineering/cases/2026-04-30-spring-modulith-modular-monolith.md` (N3)
 - 14a-bis Phase E entry rubric: `.claude/rules/plan-review-deep.md` § 5
 - Phase E hook 5-line meaning checklist: `SETUP.md` `### Phase E (DDD/TDD) stack hook`
+
+## Domain layer no-mocking
+
+Domain layer tests (entities, value objects, aggregates) verify behavior
+through the aggregate's public API. Mocks are forbidden in this layer.
+
+- **Why**: domain logic must be deterministic + framework-independent.
+  Mocking implementation details couples tests to internal structure.
+- **How**: construct real aggregates via factories; assert on returned
+  domain events / state transitions / domain exceptions.
+- **Reference**: `.claude/skills/tdd/mocking.md` (Pocock vendor) +
+  `.claude/skills/office-hours-ddd-discovery/SKILL.md` Q4 (Aggregate
+  root boundary).
+- **Cross-stack**: typescript `examples/archetype-ddd-pilot/seed/__tests__/domain/Order.test.ts`
+  applies the same pattern.
