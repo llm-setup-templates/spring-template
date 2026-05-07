@@ -96,3 +96,4 @@ See `_ADR-template.md` for the canonical structure and
 | ADR-003 | Branch protection | 2026-05-01 | Accepted |
 | ADR-004 | Template governance rationale | 2026-05-01 | Accepted |
 | ADR-005 | Skill vendor policy | 2026-05-06 | Accepted |
+| ADR-007 | Spike code at workspace root, not inside Gradle module | 2026-05-08 | Accepted |
