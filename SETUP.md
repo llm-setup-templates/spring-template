@@ -212,6 +212,16 @@ grep -n "YOUR_ORG\|YOUR_USERNAME" .github/CODEOWNERS  # must be empty
 | `ArchUnit: Rule ... failed to check any classes` | ArchUnit 1.4+ default `archRule.failOnEmptyShould=true` | `archunit.properties` already sets `=false` — verify file copied to `src/test/resources/` |
 | `Testcontainers: Cannot connect to Dockerd` | Docker not available | CI's `ubuntu-latest` image has Docker preinstalled. Locally, ensure Docker Desktop is running. |
 
+## 8. Visual diagnostics
+
+`screenshot-md` 도구 (워크스페이스 외부 `tools/screenshot-md/`, Playwright 기반)는 markdown 안의 SCREENSHOT directive를 자동 처리해 PNG 캡처 + 이미지 링크 삽입. UI / 에러 페이지 / 응답 페이로드 시각 기록 모두 동일 directive 한 줄로 처리.
+
+예시 directive (도구 실행 검증용):
+
+<!-- SCREENSHOT: url=https://example.com mode=fullpage output=docs/images/setup-screenshot-md-demo.png -->
+
+도구 실행: `node tools/screenshot-md/screenshot-md.mjs SETUP.md`. 첫 실행 시 위 directive 다음 줄에 `![](docs/images/...)` 자동 삽입. 지원 옵션: `mode` (element | fullpage | viewport), `selector`, `wait`, `click`, `hide`. 상세는 `tools/screenshot-md/README.md`.
+
 ## Appendix A. Prerequisites
 
 - `git` ≥ 2.40
