@@ -174,14 +174,14 @@ case "$DOC_MODULES" in
     ;;
 esac
 
-# 8. CLAUDE.md PROJECT_NAME + PROJECT_ONE_LINER substitution
-grep -q '^# e2e-test' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md PROJECT_NAME not substituted"; exit 1; }
-! grep -q '{{PROJECT_NAME}}' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md {{PROJECT_NAME}} placeholder leak"; exit 1; }
+# 8. AGENTS.md PROJECT_NAME + PROJECT_ONE_LINER substitution
+grep -q '^# e2e-test' AGENTS.md \
+  || { echo "FAIL: AGENTS.md PROJECT_NAME not substituted"; exit 1; }
+! grep -q '{{PROJECT_NAME}}' AGENTS.md \
+  || { echo "FAIL: AGENTS.md {{PROJECT_NAME}} placeholder leak"; exit 1; }
 # Round 3 R3-5: PROJECT_ONE_LINER substituted
-! grep -q '{{PROJECT_ONE_LINER}}' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md PROJECT_ONE_LINER not substituted"; exit 1; }
+! grep -q '{{PROJECT_ONE_LINER}}' AGENTS.md \
+  || { echo "FAIL: AGENTS.md PROJECT_ONE_LINER not substituted"; exit 1; }
 
 echo "[e2e] structural checks PASS"
 

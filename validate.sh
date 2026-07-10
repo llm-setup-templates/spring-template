@@ -72,8 +72,8 @@ ALLOWLIST=(
   "examples/support/response/ResultType.java"  # same
   "examples/core/api/support/ApiControllerAdvice.java"  # {{BASE_PACKAGE}}.core.api.support + 3 imports
   "examples/application-dev.yml"               # logging.level.{{BASE_PACKAGE}} (only yml with hit, others don't)
-  # CLAUDE.md: {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}}
-  "CLAUDE.md"
+  # AGENTS.md: {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}}
+  "AGENTS.md"
   # Documentation files that show placeholders as examples/instructions
   # (template-only, removed by Stage A — never reach derived repo).
   "SETUP.md"
@@ -134,7 +134,7 @@ echo "=== spring-template required file existence check ==="
 
 REQUIRED_FILES=(
   "SETUP.md"
-  "CLAUDE.md"
+  "CLAUDE.md" "AGENTS.md"
   "README.md"
   ".claude/rules/code-style.md"
   ".claude/rules/architecture.md"
@@ -250,8 +250,8 @@ check_absent "V9b" "SETUP.md Prerequisites: JDK >= 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "JDK >= 21"
 check_absent "V9c" "SETUP.md Pinned Versions: Java 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "Java \(Temurin\) \| 21"
-check_absent "V9d-1" "CLAUDE.md uses spring-java-format 0.0.47 (not 0.0.43)" \
-  "$TEMPLATE_DIR/CLAUDE.md" 'spring-java-format 0\.0\.43'
+check_absent "V9d-1" "AGENTS.md uses spring-java-format 0.0.47 (not 0.0.43)" \
+  "$TEMPLATE_DIR/AGENTS.md" 'spring-java-format 0\.0\.43'
 check_absent "V9d-2" ".claude/rules/code-style.md uses spring-java-format 0.0.47 (not 0.0.43)" \
   "$TEMPLATE_DIR/.claude/rules/code-style.md" 'spring-java-format 0\.0\.43'
 check_present_eq "V9e" "ArchitectureTest.java JavaDoc claims 12 rules" \
