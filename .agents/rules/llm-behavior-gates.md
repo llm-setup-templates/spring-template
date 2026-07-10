@@ -154,7 +154,7 @@ trigger: `pull_request` (open/edit/sync/labeled/unlabeled/reopened) + `issue_com
 ## License & Attribution
 
 - Karpathy 4 원칙: [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) (MIT). 본 rule의 Gate 1/2/3/4는 그 §4/§1/§3/§2를 PR-level 행동 계약으로 박제.
-- F1 4 subfacet 위임: [`.claude/rules/plan-review-deep.md`](./plan-review-deep.md) Section 1.
+- F1 4 subfacet 위임: [`.agents/rules/plan-review-deep.md`](./plan-review-deep.md) Section 1.
 
 ## See Also
 
