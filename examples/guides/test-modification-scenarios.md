@@ -1,6 +1,6 @@
 # Test Modification Scenarios — Spring Boot / JUnit 5
 
-Three concrete scenarios demonstrating `.claude/rules/test-modification.md` in action.
+Three concrete scenarios demonstrating `.agents/rules/test-modification.md` in action.
 Each scenario starts from a working Spring Boot project with passing tests.
 
 ---

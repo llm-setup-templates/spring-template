@@ -85,7 +85,7 @@ the technical decision into those terms. This keeps ADRs legible to
 PMs, founders, and future-you.
 
 See `_ADR-template.md` for the canonical structure and
-`.claude/rules/documentation.md` § ADR lifecycle for the full ruleset.
+`.agents/rules/documentation.md` § ADR lifecycle for the full ruleset.
 
 ## ADR Index
 

@@ -24,19 +24,23 @@ Invoked when the user runs `/claude-md-reviewer` or
 
 ### Step 1: Mode Detection
 
-If no argument is provided, check whether `.claude/` folder and CLAUDE.md exist:
-- CLAUDE.md exists → Mode A (review)
-- CLAUDE.md missing → Mode B (create)
-- `.claude/rules/` has 5+ files → also run Mode C in parallel
+If no argument is provided, check whether the rules body exists. When `AGENTS.md`
+is present it is the canonical body (CLAUDE.md is only the `@AGENTS.md` import shell);
+review AGENTS.md in that case, otherwise review CLAUDE.md:
+- AGENTS.md or CLAUDE.md exists → Mode A (review)
+- both missing → Mode B (create)
+- `.agents/rules/` or `.claude/rules/` has 5+ files → also run Mode C in parallel
 
 ### Step 2: Target File Collection
 
 Scan all of the following paths and collect the list of existing files:
 
 ```
+./AGENTS.md
 ./CLAUDE.md
 ./.claude/CLAUDE.md
 ./CLAUDE.local.md
+./.agents/rules/**/*.md
 ./.claude/rules/**/*.md
 ./.claude/skills/**/SKILL.md
 ./.claude/settings.json

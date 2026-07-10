@@ -41,7 +41,7 @@ If 3 stacks could share byte-identical contract test interfaces, the 3-template 
 - Obsidian: `Sources/sw-engineering/2026-04-30-ddd-tdd-synergy-thesis.md` (N2 thesis delta)
 - Obsidian: `Sources/sw-engineering/2026-04-30-no-mocking-aggregate-debate.md` (N5 Classicist)
 - Obsidian: `Sources/sw-engineering/cases/2026-04-30-spring-modulith-modular-monolith.md` (N3)
-- 14a-bis Phase E entry rubric: `.claude/rules/plan-review-deep.md` § 5
+- 14a-bis Phase E entry rubric: `.agents/rules/plan-review-deep.md` § 5
 - Phase E hook 5-line meaning checklist: `SETUP.md` `### Phase E (DDD/TDD) stack hook`
 
 ## Domain layer no-mocking

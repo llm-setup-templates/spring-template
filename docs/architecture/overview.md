@@ -60,7 +60,7 @@ flowchart LR
 
 ## Anti-patterns to avoid
 
-From `.claude/rules/documentation.md` § LLM writing guidance:
+From `.agents/rules/documentation.md` § LLM writing guidance:
 
 - **Database-centric modeling**: don't name boxes after tables (`users`,
   `orders`). Use the domain term (`Member`, `Order`)

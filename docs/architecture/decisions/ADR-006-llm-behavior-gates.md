@@ -18,7 +18,7 @@ Phase F는 mattpocock/skills `tdd`와 garrytan/gstack `office-hours-ddd-discover
 
 ## Decision
 
-**4-Gate Behavior Contract**를 채택. `.claude/rules/llm-behavior-gates.md`에 박제.
+**4-Gate Behavior Contract**를 채택. `.agents/rules/llm-behavior-gates.md`에 박제.
 
 | # | Gate | 출처 | F1 관계 |
 |---|------|------|--------|
@@ -64,7 +64,7 @@ Phase F는 mattpocock/skills `tdd`와 garrytan/gstack `office-hours-ddd-discover
 ### B. `docs/SAFE_OPERATION.md` 단독 박제
 
 문서로만 박제. **기각**.
-- LLM이 실제 따르는 건 docs보다 `.claude/rules/`. 우선순위 밀림
+- LLM이 실제 따르는 건 docs보다 `.agents/rules/`. 우선순위 밀림
 - PR 자동화 입력 계약이 docs에 박제되면 강제력 약함
 
 ### C. Phase G discuss로 미루기
@@ -91,7 +91,7 @@ Accepted via this PR.
 ## References
 
 - [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) (MIT) — Karpathy 4 원칙 원본
-- [`.claude/rules/plan-review-deep.md`](../../../.claude/rules/plan-review-deep.md) §1 — F1.a-d 4 subfacet
-- [`.claude/rules/llm-behavior-gates.md`](../../../.claude/rules/llm-behavior-gates.md) — 본 rule 본문
+- [`.agents/rules/plan-review-deep.md`](../../../.agents/rules/plan-review-deep.md) §1 — F1.a-d 4 subfacet
+- [`.agents/rules/llm-behavior-gates.md`](../../../.agents/rules/llm-behavior-gates.md) — 본 rule 본문
 - `Comparisons/LLM Skill Distribution Inline vs External Comparison` (Obsidian wiki) — codex 포기비용 분석 (4라운드)
 - `Reference/Karpathy LLM Coding Guidelines Reference` (Obsidian wiki) — 원본 distillation

@@ -60,7 +60,7 @@ Sibling Gradle module with isolated build script.
 
 ### Option C: status quo — put spike in `src/main/` and remove later
 
-**Rejected because**: violates Gate 3 (Surgical Diff) of `.claude/rules/llm-behavior-gates.md`. Production code gets touched twice per spike (add, remove) for zero shipped value.
+**Rejected because**: violates Gate 3 (Surgical Diff) of `.agents/rules/llm-behavior-gates.md`. Production code gets touched twice per spike (add, remove) for zero shipped value.
 
 ## Named exception — when spike-inside-Gradle is permitted
 

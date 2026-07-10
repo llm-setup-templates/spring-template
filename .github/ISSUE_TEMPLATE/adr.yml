@@ -8,7 +8,7 @@ body:
       value: |
         ADRs capture **final** architectural decisions with context and trade-offs.
         - Not yet final / still debating → open an **RFC** issue instead
-        - See `.claude/rules/documentation.md` §ADR/RFC lifecycle for the full workflow
+        - See `.agents/rules/documentation.md` §ADR/RFC lifecycle for the full workflow
 
   - type: input
     id: adr-number
