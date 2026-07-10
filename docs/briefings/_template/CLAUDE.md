@@ -40,7 +40,7 @@
 
 - Reports to draw from: `docs/reports/<file>.md`
 - ADRs referenced: `docs/architecture/decisions/ADR-NNN`
-- FRs featured: `docs/requirements/FR-XX`
+- FRs featured: `docs/requirements/FR-{DOMAIN}-{NNN}`
 
 ## Prior briefings to learn from
 

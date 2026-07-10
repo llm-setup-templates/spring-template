@@ -312,6 +312,11 @@ done
 check_present_eq "V13" "PR template references (FR / ADR / RTM / Balancing)" "$V13_REFS" "4"
 
 echo ""
+echo "=== V_rtm: RTM integrity (body: scripts/rtm-lint.sh) ==="
+if bash "$TEMPLATE_DIR/scripts/rtm-lint.sh" "$TEMPLATE_DIR"; then pass "V_rtm" "RTM integrity"
+else fail "V_rtm" "RTM integrity violations found (see VIOLATION lines above)"; fi
+
+echo ""
 echo "=== V14: Reports opt-in module consistency ==="
 if [ -d "$TEMPLATE_DIR/docs/reports" ]; then
   V14_FILES=0

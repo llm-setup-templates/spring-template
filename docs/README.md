@@ -19,7 +19,7 @@ New document → Which type?
 │   → architecture/decisions/RFC-NNN-<slug>.md  (Proposed, Draft PR)
 │
 ├─ One feature's I/O, preconditions, logic
-│   → requirements/FR-XX-<slug>.md               (copy _FR-template.md)
+│   → requirements/FR-{DOMAIN}-{NNN}-<slug>.md   (copy _FR-template.md)
 │   → also add a row to requirements/RTM.md
 │
 ├─ A measurement / comparison / spike / API deep-dive

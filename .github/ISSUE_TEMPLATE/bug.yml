@@ -48,7 +48,7 @@ body:
     attributes:
       label: Affected FR (if applicable)
       description: Which functional requirement(s) does this break?
-      placeholder: FR-03
+      placeholder: FR-{DOMAIN}-{NNN}
 
   - type: textarea
     id: environment

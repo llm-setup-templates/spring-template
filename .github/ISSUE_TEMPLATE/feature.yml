@@ -1,5 +1,5 @@
 name: ✨ Feature
-description: New functional requirement to implement (FR-XX)
+description: New functional requirement to implement (FR-{DOMAIN}-{NNN})
 title: "feat(<scope>): "
 labels: [feature]
 body:
@@ -8,7 +8,7 @@ body:
     attributes:
       label: FR ID
       description: Use the next unused FR number in docs/requirements/RTM.md
-      placeholder: FR-01
+      placeholder: FR-{DOMAIN}-{NNN}
     validations:
       required: true
 

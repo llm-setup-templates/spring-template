@@ -1,6 +1,6 @@
-# FR-XX: <one-line imperative title>
+# FR-{DOMAIN}-{NNN}: <one-line imperative title>
 
-> **Copy this file.** Rename to `FR-XX-<slug>.md`, remove the leading
+> **Copy this file.** Rename to `FR-{DOMAIN}-{NNN}-<slug>.md`, remove the leading
 > underscore, fill in every section. Add the row to `RTM.md` in the
 > same PR.
 
@@ -8,7 +8,7 @@
 
 ## Metadata
 
-- **FR ID**: FR-XX
+- **FR ID**: FR-{DOMAIN}-{NNN}
 - **Status**: Draft / Design / Implementing / Done / Deprecated
 - **GitHub Issue**: #NNN
 - **Related ADRs**: ADR-NNN (optional)
@@ -64,7 +64,7 @@ ambiguity. An LLM implementing from this spec should produce one
 compilable `@Service` method.
 
 ```
-BEGIN FR-XX (in ExampleService, @Transactional)
+BEGIN FR-{DOMAIN}-{NNN} (in ExampleService, @Transactional)
   VALIDATE input via Bean Validation (@Valid on controller)
   FETCH user FROM userRepository BY exampleId
   IF user IS EMPTY THEN
@@ -75,7 +75,7 @@ BEGIN FR-XX (in ExampleService, @Transactional)
   END IF
   INSERT into analyticsEvents (event_type, user_id, ts)
   RETURN ExampleResponseDto.from(user)
-END FR-XX
+END FR-{DOMAIN}-{NNN}
 ```
 
 The `ApiControllerAdvice` converts `CoreException` to

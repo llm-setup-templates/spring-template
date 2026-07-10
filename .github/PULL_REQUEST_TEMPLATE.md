@@ -42,7 +42,7 @@ Out-of-scope: [의도적 미변경 영역]
 
 <!-- Link every applicable document. Delete rows that don't apply. -->
 
-- [ ] FR: `docs/requirements/FR-XX.md` — <!-- closes #... -->
+- [ ] FR: `docs/requirements/FR-{DOMAIN}-{NNN}.md` — <!-- closes #... -->
 - [ ] ADR: `docs/architecture/decisions/ADR-NNN-<slug>.md` — <!-- Accepted via this PR -->
 - [ ] RFC: `docs/architecture/decisions/RFC-NNN-<slug>.md` — <!-- still Proposed, not in scope for merge -->
 - [ ] Report: `docs/reports/<type>-YYYY-MM-DD-<slug>.md` — <!-- spike / benchmark / api-analysis / paar -->

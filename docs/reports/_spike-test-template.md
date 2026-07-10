@@ -89,6 +89,6 @@ Numbered takeaways, each under one sentence.
 Where does this result get cited afterward?
 
 - ADR-NNN: <decision this test informs>
-- RTM row update for NFR-XX: <new measurement>
+- RTM row update for NFR-{CATEGORY}-{NNN}: <new measurement>
 - Slide deck: `docs/briefings/YYYY-MM-DD-<event>/` (if Briefings
   module is installed)

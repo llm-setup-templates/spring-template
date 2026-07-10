@@ -9,7 +9,7 @@
 
 | # | Question | Needed for | Blocking? | Owner to answer |
 |---|---|---|---|---|
-| 1 | <unresolved item> | FR-XX / ADR-NNN / Sprint N | yes / no | <who can answer> |
+| 1 | <unresolved item> | FR-{DOMAIN}-{NNN} / ADR-NNN / Sprint N | yes / no | <who can answer> |
 | 2 | ... | ... | ... | ... |
 
 ## Rules
