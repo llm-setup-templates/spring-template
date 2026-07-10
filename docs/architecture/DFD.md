@@ -61,9 +61,9 @@ both Black Hole (input but no output) and Miracle (output but no input).
 
 | ID | Name | Primitive? | Inputs | Outputs | FR |
 |---|---|---|---|---|---|
-| 1.0 | <Verb Noun> | no (decomposable) | from EXT-01 | to process 2.0 | FR-XX |
-| 1.1 | <Verb Noun> | yes (primitive) | ... | ... | FR-XX |
-| 1.2 | <Verb Noun> | yes (primitive) | ... | ... | FR-XX |
+| 1.0 | <Verb Noun> | no (decomposable) | from EXT-01 | to process 2.0 | FR-{DOMAIN}-{NNN} |
+| 1.1 | <Verb Noun> | yes (primitive) | ... | ... | FR-{DOMAIN}-{NNN} |
+| 1.2 | <Verb Noun> | yes (primitive) | ... | ... | FR-{DOMAIN}-{NNN} |
 
 A **primitive** process is one that can't be decomposed further. Each
 primitive must have a one-to-one mapping to a Mini-Spec — either a

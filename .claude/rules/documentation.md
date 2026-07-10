@@ -24,7 +24,7 @@ Which best describes what you're about to write?
 │   → If not yet final: docs/architecture/decisions/RFC-NNN-<slug>.md
 │
 ├─ A single feature's I/O, preconditions, logic, decision table
-│   → docs/requirements/FR-XX-<slug>.md (copy _FR-template.md)
+│   → docs/requirements/FR-{DOMAIN}-{NNN}-<slug>.md (copy _FR-template.md)
 │   → Add a row to docs/requirements/RTM.md
 │
 ├─ A measurement result (load test, framework comparison, API analysis)
@@ -45,7 +45,12 @@ Which best describes what you're about to write?
 
 ## Naming rules
 
-- **FR / NFR**: `FR-01`, `FR-02`, `NFR-01` — functional / non-functional requirements
+- **FR / NFR / TC**: `FR-{DOMAIN}-{NNN}`, `NFR-{CATEGORY}-{NNN}`,
+  `TC-{DOMAIN}-{NNN}` — three-digit zero-padded (`FR-ORDER-001`). Domain
+  prefixes are uppercase, defined in the table at the top of
+  `docs/requirements/RTM.md`, and each domain numbers independently.
+  Never reuse a retired number — set the RTM row's Status to
+  `Deprecated` instead of deleting it
 - **ADR / RFC**: three-digit zero-padded — `ADR-001`, `ADR-042`, `RFC-007`
 - **Reports**: prefix + date + slug — `spike-test-2026-04-11-fc-api-korean.md`
 - **Briefings**: date-prefixed folder — `2026-04-14-professor-interview/`
@@ -89,16 +94,37 @@ Only two kinds of edit are allowed on an Accepted ADR:
 
 ## RTM — Requirements Traceability Matrix
 
-`docs/requirements/RTM.md` is a single table with one row per FR that
-links the requirement across all of its artifacts:
+`docs/requirements/RTM.md` is a single table with one row per
+requirement — FR and NFR rows share the table — that links the
+requirement across all of its artifacts:
 
 ```
-| FR-XX | Summary | Issue | ADR | Component | Test | Status |
+| FR ID | Summary | Issue | ADR | API | Component(s) | Test(s) | Status | Owner | Notes |
 ```
 
 Update the RTM in the same PR that adds or changes an FR. If you add a
 new ADR that a previously-accepted FR now depends on, add the ADR link
 to that FR's row.
+
+### Identifier format
+
+- `FR-{DOMAIN}-{NNN}` — functional requirement
+- `NFR-{CATEGORY}-{NNN}` — non-functional requirement
+- `TC-{DOMAIN}-{NNN}` — test case
+- `{NNN}` is always three digits, zero-padded (`001`, `042`). Formats
+  are enforced by the `V_rtm` section of `validate.sh` as
+  `^FR-[A-Z]+-[0-9]{3}$`, `^NFR-[A-Z]+-[0-9]{3}$`, `^TC-[A-Z]+-[0-9]{3}$`
+- **Never reuse a retired number.** Retirement is a Status change to
+  `Deprecated`, never a row deletion — the surviving row is the ledger
+  that keeps the number burned
+- When a test carries a TC ID, put the same TC ID in the test method's
+  `@DisplayName` so the RTM row and the test source can be cross-checked
+
+Row completeness follows Status: `Draft` / `Design` rows need only ID,
+Summary, and Status; `Done` rows must list at least one existing
+component path and one existing test path; any path you write must
+exist, except on `Deprecated` rows (historical paths survive code
+removal). See the "How to use" section at the top of RTM.md.
 
 ## Writing for LLM agents (not just humans)
 

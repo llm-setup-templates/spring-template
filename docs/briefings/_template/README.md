@@ -31,4 +31,4 @@ What was briefed, to whom, and what was expected to be concluded.
 
 - Related reports: `docs/reports/...`
 - Related ADRs: `docs/architecture/decisions/...`
-- Related FRs: `docs/requirements/FR-XX`
+- Related FRs: `docs/requirements/FR-{DOMAIN}-{NNN}`

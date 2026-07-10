@@ -28,7 +28,7 @@ top-to-bottom.
 | Response envelope | `ApiResponse<T>` wrapper, `CoreException` hierarchy | Raw entity return leaks JPA state to clients; `ResponseStatusException` in services breaks layering |
 | Formatter | spring-java-format 0.0.47 (owns whitespace) | Checkstyle fighting Prettier-style formatting is a waste |
 | Linter | Checkstyle 10.17 (Google Java Style base) + SpotBugs 4.8.6 | One for style, one for bug patterns |
-| Boundary test | ArchUnit (10 layered rules) | Reflection-based checks that compile-time can't catch |
+| Boundary test | ArchUnit (layered boundary rules) | Reflection-based checks that compile-time can't catch |
 | CI commit gate | wagoid/commitlint-github-action@v6 | JVM templates can't use Husky portably — CI-level gate |
 
 ---

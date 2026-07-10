@@ -14,8 +14,8 @@ body:
     id: adr-number
     attributes:
       label: ADR number
-      description: Next unused number in docs/architecture/decisions/
-      placeholder: "ADR-011"
+      description: Check docs/architecture/decisions/ and use the next unused number
+      placeholder: "ADR-NNN"
     validations:
       required: true
 
