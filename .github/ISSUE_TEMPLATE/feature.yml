@@ -57,8 +57,9 @@ body:
       multiple: true
       options:
         - unit
-        - integration
-        - snapshot
+        - integration (WebMvcTest)
+        - integration (Testcontainers)
+        - ArchUnit
         - e2e
     validations:
       required: true

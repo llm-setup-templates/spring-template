@@ -26,7 +26,7 @@
 
 ## Architecture Summary
 See `.claude/rules/architecture.md` for full rules.
-This project uses a layered Spring Boot architecture with **team-dodn package naming** for future multi-module migration. Packages: `core.api` (controllers), `core.domain` (business logic), `storage.db` (JPA persistence), `clients` (external APIs), `support` (cross-cutting: error handling, logging). All API responses are wrapped in `ApiResponse<T>` with standardized `ErrorCode` enums. Global exception handling via `@ControllerAdvice` converts `CoreException` to `ApiResponse`. ArchUnit enforces 12 boundary rules at test time. See `.claude/rules/architecture.md` for full rules.
+This project uses a layered Spring Boot architecture with **team-dodn package naming** for future multi-module migration. Packages: `core.api` (controllers), `core.domain` (business logic), `storage.db` (JPA persistence), `clients` (external APIs), `support` (cross-cutting: error handling, logging). All API responses are wrapped in `ApiResponse<T>` with standardized `ErrorCode` enums. Global exception handling via `@ControllerAdvice` converts `CoreException` to `ApiResponse`. ArchUnit enforces the boundary rules at test time (the rule count lives in `ArchitectureTest.java` only). See `.claude/rules/architecture.md` for full rules.
 
 ## Verification Rules
 After any code change, run the full verification loop.

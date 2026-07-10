@@ -2,8 +2,8 @@
 
 > Replace this line with your project name and one-sentence description.
 
-This tree is installed by Phase 5.5 of the `llm-setup-templates/typescript-template`
-setup. It follows a four-module layout: `Core` is always present;
+This tree is installed by Phase 5.5 of the llm-setup-templates scaffold.
+It follows a four-module layout: `Core` is always present;
 `Reports`, `Briefings`, and `Extended` are opt-in and may have been
 trimmed from this copy.
 

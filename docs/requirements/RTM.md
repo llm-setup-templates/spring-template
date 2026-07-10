@@ -25,14 +25,18 @@
 
 ## Functional requirements
 
-<!-- Delete this example row when adding your first real FR. -->
+<!-- Example row (kept in this comment so it never pollutes the live table):
+| FR-ORDER-001 | (example) cancel an order | #0 | — | `src/main/java/com/example/app/order/CancelOrderService.java` | TC-ORDER-001 `src/test/java/com/example/app/order/CancelOrderServiceTest.java` | Done |
+-->
 
 | FR ID | Summary | Issue | ADR | Component(s) | Test(s) | Status |
 |---|---|---|---|---|---|---|
-| FR-00 | (example) session invalidation on password change | #0 | ADR-001 | `src/features/auth/model/invalidate-session.ts` | `__tests__/auth/invalidate-session.test.ts` | Draft |
 
 ## Non-functional requirements
 
+<!-- Example row:
+| NFR-PERF-001 | (example) p95 API latency | < 300 ms | k6 spike test (`docs/reports/spike-test-YYYY-MM-DD-api-latency.md`) | — | Draft |
+-->
+
 | NFR ID | Summary | Target | Measurement | Owner | Status |
 |---|---|---|---|---|---|
-| NFR-00 | (example) p95 API latency | < 300 ms | k6 spike test (`docs/reports/spike-test-YYYY-MM-DD-api-latency.md`) | platform-team | Draft |

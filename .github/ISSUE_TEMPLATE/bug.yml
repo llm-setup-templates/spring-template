@@ -54,11 +54,11 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: OS, Node version, browser, relevant env vars.
+      description: OS, Java version, Spring Boot version, relevant env vars.
       value: |
         - OS:
-        - Node: (output of `node -v`)
-        - Browser:
+        - Java: (output of `java -version`)
+        - Spring Boot:
 
   - type: textarea
     id: logs
