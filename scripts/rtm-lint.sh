@@ -7,10 +7,11 @@
 #   열 이름으로 인덱스를 찾는다(헤더 구동). "FR ID"만 보면 문서 상단의 안내 표가 가로챈다.
 #   따라서 10열(spring, python — Owner 포함)과 11열(typescript — Screen 포함) RTM을
 #   같은 스크립트가 처리하고, Screen 열은 존재할 때만 검사한다(자동 감지).
-#   단일 표 전제(NFR 행 통합 스키마). 분리된 구표(별도 NFR 표)는 첫 헤더 기준으로 읽힌다.
+#   단일 표 전제(NFR 행 통합 스키마). 헤더 표 밖의 FR/NFR 행은 row-outside-table 위반이다 —
+#   다른 표의 행을 이 헤더의 열 인덱스로 읽으면 Status가 엉뚱한 셀에서 나와 게이트가 꺼진다.
 #
 # 출력 규약: VIOLATION은 exit 1을 만든다. WARN은 exit에 반영되지 않는다(정보성).
-#   WARN은 하나뿐이다 — unknown-status(알 수 없는 상태 표기, 행이 게이트 밖임을 알림).
+#   현재 WARN은 없다. 게이트를 끄는 조건은 전부 위반으로 다룬다(fail-closed).
 #
 # 검사하는 것:
 #   1. FR와 NFR ID 형식 (FR-{DOMAIN}-{NNN}, NFR-{CATEGORY}-{NNN}, 3자리)과 ID 중복
@@ -23,11 +24,12 @@
 #      Draft, Design   - ID, Summary, Status만 필수. 경로 요구 없음
 #      Implementing    - 경로 선택(부분 허용). 기입된 백틱 경로만 실재성 검사
 #      Done            - Component와 Test에 백틱 경로 각 1개 이상 필수 + 실재성 검사
-#      Deprecated      - Draft 수준. 경로 실재성 면제, 단 위생 검사(절대경로, 상위 이탈)는 적용
-#      그 외 상태      - 게이트 미적용, WARN만 (상태 어휘 자체는 검사하지 않음)
+#      Deprecated      - Draft 수준. 경로 실재성 면제, 단 위생 검사(절대경로, 상위 이탈, 백슬래시)는 적용
+#      그 외 상태      - VIOLATION unknown-status. 오타 하나로 게이트가 꺼지면 안 된다
 #      공통 원칙: 어느 상태든 "쓴 경로는 실재해야 한다"(Deprecated는 실재성만 면제).
 #   5. 경로 규칙: Component와 Test 셀의 백틱 경로만 검사(다른 셀의 백틱은 무시).
-#      절대경로 거부, 상위 이탈(..) 거부, 파일만 인정(-f, 디렉토리 거부)
+#      절대경로와 UNC 거부, 상위 이탈(..) 거부, 백슬래시 거부(Git Bash가 해석함),
+#      파일만 인정(-f, 디렉토리 거부)
 #   6. Test 셀의 TC 토큰 형식 (TC-{DOMAIN}-{NNN}) - 토큰이 있을 때만
 #   7. Screen 열이 있으면(typescript) 값 형식 {DEVICE}-{AREA}-{SCREEN}-{NN}
 #      (대문자 세그먼트 3개 + 2자리 숫자, 쉼표 복수 허용). n/a 허용. 열이 없으면 건너뜀
@@ -40,13 +42,11 @@
 #   - 헤더 열 이름 변경(예: Component(s)를 Components로) — 필수 열을 전부 가진 표 행이
 #     없으면 VIOLATION rtm-header-not-found로 실패한다(exit 1). 조용히 꺼지지 않는다.
 #     검사를 끄려면 validate.sh의 V_rtm 호출 줄을 지운다(RTM.md 파일 자체가 없으면 SKIP exit 0)
-#   - FR/NFR 행을 가진 표가 여러 개일 때: 셀 수 검증은 표별 헤더 기준(오탐 없음)이나,
-#     열 의미(Status, Component 등 위치)는 첫 "FR ID" 표의 헤더 기준으로 읽힌다 —
-#     헤더 구성이 다른 두 번째 표의 행은 게이트가 부정확(unknown-status WARN 등).
-#     FR/NFR 행은 한 표에 모으는 것을 권장
+#   - FR/NFR 행을 여러 표에 나눠 두는 것 — 헤더 표 밖의 행은 row-outside-table 위반이다.
+#     FR/NFR 행은 한 표에 모아라(NFR 통합 스키마가 그 전제다)
+#   - 헤더 열 이름의 서식(볼드, 백틱) 또는 선두 파이프 생략 — 정확 일치만 인정한다
 #
 # 검사하지 않는 것 (이 검사의 통과가 아래를 보증하지 않는다):
-#   - Status 어휘 오타 (알 수 없는 상태는 게이트 미적용 WARN만. 대소문자 변형은 수용)
 #   - TC ID의 중복
 #   - 백틱 없이 맨 텍스트로 적힌 경로
 #   - ADR, Issue, API(operationId), Owner 열 값의 실재성과 유효성
@@ -104,14 +104,18 @@ header=$(echo "$stripped" | /usr/bin/awk -F'|' '
     }
     if (have_id && have_sum && have_comp && have_test && have_stat) { print; exit }
   }')
-# 데이터 행에 "그 행이 속한 표의 헤더 셀 수"를 탭으로 태깅 (표마다 열 수가 달라도 오탐 없게)
-rows=$(echo "$stripped" | /usr/bin/awk -F'|' '
+# 데이터 행에 "그 행이 속한 표의 헤더 셀 수"를 탭으로 태깅.
+# 헤더 표 밖의 FR/NFR 행은 outside 태그를 달아 뒤에서 위반으로 거부한다 —
+# 다른 표의 행을 이 헤더의 열 인덱스로 읽으면 Status가 엉뚱한 셀에서 나와 게이트가 꺼진다.
+rows=$(printf '%s\n' "$stripped" | /usr/bin/awk -F'|' -v hdr="$header" '
   {
     is_tbl = ($0 ~ /^\|/)
-    if (is_tbl && !prev_tbl) { curnf = NF }   # 각 표의 첫 행 = 그 표의 헤더
+    if (is_tbl && !prev_tbl) { curnf = NF; inhdr = 0 }   # 각 표의 첫 행 = 그 표의 헤더
+    if ($0 == hdr) inhdr = 1
+    if (!is_tbl) inhdr = 0
     if (is_tbl && $0 ~ /^\|[[:space:]]*N?FR-/) {
       if (curnf == 0) curnf = NF
-      print curnf "\t" $0
+      print (inhdr ? curnf : "outside") "\t" $0
     }
     prev_tbl = is_tbl
   }')
@@ -153,14 +157,21 @@ if [ -z "$rows" ]; then
 fi
 
 declare -A seen_ids
-trim() { echo "$1" | /usr/bin/sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; }
-field() { echo "$2" | /usr/bin/awk -F'|' -v i="$1" '{print $i}'; }
+# printf를 쓴다 — echo는 값이 "-n"이면 그것을 옵션으로 먹어 빈 문자열을 낸다
+trim() { printf '%s\n' "$1" | /usr/bin/sed 's/^[[:space:]]*//; s/[[:space:]]*$//'; }
+field() { printf '%s\n' "$2" | /usr/bin/awk -F'|' -v i="$1" '{print $i}'; }
 
 while IFS= read -r tagged; do
   [ -z "$tagged" ] && continue
   tbl_nf=${tagged%%$'\t'*}
   row=${tagged#*$'\t'}
   id=$(trim "$(field "$ID_I" "$row")")
+
+  # 헤더 표 밖의 FR/NFR 행 — 열 의미가 다르므로 해석하지 않고 거부한다
+  if [ "$tbl_nf" = "outside" ]; then
+    echo "VIOLATION row-outside-table ($id): FR/NFR rows must live in the table whose header carries FR ID/Summary/Component(s)/Test(s)/Status"
+    fail=1; continue
+  fi
   summary=$(trim "$(field "$SUM_I" "$row")")
 
   # 1. ID 형식과 중복 (첫 셀은 열 밀림과 무관하므로 먼저 검사)
@@ -188,10 +199,12 @@ while IFS= read -r tagged; do
   status=${status//$BT/}
 
   # 4. 상태별 게이트 분기 (대소문자 무시 — 표기 규범은 Title Case)
-  status_lc=$(echo "$status" | /usr/bin/tr '[:upper:]' '[:lower:]')
+  #    알 수 없는 상태는 위반이다. 경고로 두면 오타 하나로 게이트가 통째로 꺼진다(fail-open)
+  status_lc=$(printf '%s\n' "$status" | /usr/bin/tr '[:upper:]' '[:lower:]')
   case "$status_lc" in
     draft|design|implementing|done|deprecated) gate="$status_lc" ;;
-    *) echo "WARN unknown-status ($id): '$status' - row not gated"; warn=$((warn+1)); gate="unknown" ;;
+    *) echo "VIOLATION unknown-status ($id): '$status' - not one of Draft/Design/Implementing/Done/Deprecated"
+       fail=1; continue ;;
   esac
 
   # 5. 경로 추출과 검사 (Component와 Test 셀만, 공백 경로 안전한 while read)
@@ -201,9 +214,11 @@ while IFS= read -r tagged; do
     while IFS= read -r p; do
       [ -z "$p" ] && continue
       if [ "$which" = comp ]; then comp_cnt=$((comp_cnt+1)); else test_cnt=$((test_cnt+1)); fi
-      # 위생 검사(절대경로, 상위 이탈)는 Deprecated에도 적용
+      # 위생 검사(절대경로, 상위 이탈, 백슬래시)는 Deprecated에도 적용.
+      # Git Bash는 백슬래시 경로를 해석하므로 `..\x`가 슬래시 검사를 빠져나간다
       case "$p" in
-        /*|[A-Za-z]:*) echo "VIOLATION path-absolute ($id): $p"; fail=1; continue ;;
+        /*|[A-Za-z]:*|//*) echo "VIOLATION path-absolute ($id): $p"; fail=1; continue ;;
+        *'\'*) echo "VIOLATION path-backslash ($id): $p - use forward slashes"; fail=1; continue ;;
       esac
       case "/$p/" in
         */../*) echo "VIOLATION path-escape ($id): $p"; fail=1; continue ;;
