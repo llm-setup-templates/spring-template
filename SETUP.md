@@ -239,7 +239,7 @@ All `{{...}}` placeholders below are filled by `scaffold.sh` Stage D:
 |---|---|---|---|
 | `{{PROJECT_NAME}}` | AGENTS.md, settings.gradle.kts, aws/task-definition.json | scaffold.sh Stage D | `my-spring-app` |
 | `{{PROJECT_ONE_LINER}}` | AGENTS.md | scaffold.sh Stage D (default value) | `_(fill in your project description)_` |
-| `{{BASE_PACKAGE}}` | ArchitectureTest.java (3 places: package + @AnalyzeClasses + Rule 6 + JavaDoc), AppProperties.java, support/error/*, support/response/*, core/api/support/* | scaffold.sh Stage D `find src` sed | `com.example.myspringapp` |
+| `{{BASE_PACKAGE}}` | ArchitectureTest.java (2 places: package decl + BASE_PACKAGE constant; @AnalyzeClasses and Rule 6 reference the constant), AppProperties.java, support/error/*, support/response/*, core/api/support/* | scaffold.sh Stage D `find src` sed | `com.example.myspringapp` |
 
 `PROJECT_NAME_LOWER` (hyphen-stripped) and `BASE_PACKAGE_PATH` (dot→slash) are
 internal scaffold.sh derived variables — not placeholders.

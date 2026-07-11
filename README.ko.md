@@ -6,8 +6,8 @@
 > LLM 코딩 에이전트(Claude Code / Cursor)가 빈 디렉토리에서 출발해
 > GitHub Actions CI green까지 **중간에 사람 개입 없이** 완주하도록 설계됐습니다.
 
-**실증 검증 완료**: SETUP.md 하나로 Claude Code → CI green, 2분 53초
-([증거 run](https://github.com/KWONSEOK02/llm-setup-e2e17-spring/actions/runs/24565850331)).
+**실증 검증 완료**: SETUP.md 하나로 Claude Code → CI green (검증 당시 실측 약 2분 53초,
+일회성 스캐폴드로 확인 후 임시 검증 레포는 삭제함).
 
 ---
 
@@ -110,7 +110,7 @@ Spring Boot 프로젝트를 시작하는 방법은 수십 가지입니다. 이 �
 ## 관련 템플릿
 
 - [python-template](https://github.com/llm-setup-templates/python-template) — Python 3.13 + 3가지 아키타입
-- [typescript-template](https://github.com/llm-setup-templates/typescript-template) — Next.js 15 + FSD 5 레이어
+- [typescript-template](https://github.com/llm-setup-templates/typescript-template) — Next.js 16 + FSD 5 레이어
 
 ---
 
