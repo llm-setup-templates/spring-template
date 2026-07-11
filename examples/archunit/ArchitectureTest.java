@@ -1,6 +1,5 @@
 package {{BASE_PACKAGE}}.architecture;
 
-
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -14,123 +13,153 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 /**
  * ArchUnit architecture enforcement tests.
  *
- * <p>These tests run as part of the normal test suite (./gradlew test).
- * All 12 rules must remain enabled - see .coderabbit.yaml for PR-level checks.
+ * <p>
+ * These tests run as part of the normal test suite (./gradlew test). All 12 rules must
+ * remain enabled - see .coderabbit.yaml for PR-level checks.
  *
- * <p>Multi-module scaling path: when splitting to multi-module (team-dodn pattern),
- * package names map directly: {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients,
- * {{BASE_PACKAGE}}.storage, {{BASE_PACKAGE}}.support. Rule 6 enforces this from day one.
+ * <p>
+ * Multi-module scaling path: when splitting to multi-module (team-dodn pattern), the
+ * core, clients, storage, and support sub-packages map directly to modules. Rule 6
+ * enforces this from day one.
  *
- * <p>Empty-scaffold compatibility: layeredArchitecture uses withOptionalLayers(true)
- * and src/test/resources/archunit.properties sets archRule.failOnEmptyShould=false,
- * so the rules pass on a day-0 skeleton before any controllers/services exist.
- * Remove those once real classes land if you prefer strict enforcement.
+ * <p>
+ * Empty-scaffold compatibility: layeredArchitecture uses withOptionalLayers(true) and
+ * src/test/resources/archunit.properties sets archRule.failOnEmptyShould=false, so the
+ * rules pass on a day-0 skeleton before any controllers/services exist. Remove those once
+ * real classes land if you prefer strict enforcement.
  */
-@AnalyzeClasses(packages = "{{BASE_PACKAGE}}", importOptions = {ImportOption.DoNotIncludeTests.class})
+@AnalyzeClasses(packages = "{{BASE_PACKAGE}}", importOptions = { ImportOption.DoNotIncludeTests.class })
 public class ArchitectureTest {
 
-    // Rule 1: Layered Architecture
-    // Controller -> Service -> Repository (unidirectional only)
-    @ArchTest
-    static final ArchRule layeredArchitecture =
-        Architectures.layeredArchitecture()
-            .consideringAllDependencies()
-            .withOptionalLayers(true)
-            .layer("Controller").definedBy("..controller..")
-            .layer("Service").definedBy("..service..")
-            .layer("Repository").definedBy("..repository..")
-            .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
-            .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller")
-            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service");
+	// Rule 1: Layered Architecture
+	// Controller -> Service -> Repository (unidirectional only)
+	@ArchTest
+	static final ArchRule layeredArchitecture = Architectures.layeredArchitecture()
+		.consideringAllDependencies()
+		.withOptionalLayers(true)
+		.layer("Controller")
+		.definedBy("..controller..")
+		.layer("Service")
+		.definedBy("..service..")
+		.layer("Repository")
+		.definedBy("..repository..")
+		.whereLayer("Controller")
+		.mayNotBeAccessedByAnyLayer()
+		.whereLayer("Service")
+		.mayOnlyBeAccessedByLayers("Controller")
+		.whereLayer("Repository")
+		.mayOnlyBeAccessedByLayers("Service");
 
-    // Rule 2: Entity Isolation
-    // Controllers must not access domain entities directly - use DTOs
-    @ArchTest
-    static final ArchRule entityIsolation = noClasses()
-        .that().resideInAPackage("..controller..")
-        .should().accessClassesThat().resideInAPackage("..domain..")
-        .as("Controllers must not access domain entities directly - use DTOs");
+	// Rule 2: Entity Isolation
+	// Controllers must not access domain entities directly - use DTOs
+	@ArchTest
+	static final ArchRule entityIsolation = noClasses().that()
+		.resideInAPackage("..controller..")
+		.should()
+		.accessClassesThat()
+		.resideInAPackage("..domain..")
+		.as("Controllers must not access domain entities directly - use DTOs");
 
-    // Rule 3: DTO Boundary
-    // DTOs must not carry JPA annotations
-    @ArchTest
-    static final ArchRule dtoBoundary = noClasses()
-        .that().resideInAPackage("..dto..")
-        .should().beAnnotatedWith("jakarta.persistence.Entity")
-        .orShould().beAnnotatedWith("jakarta.persistence.Table")
-        .as("DTOs must not carry JPA annotations");
+	// Rule 3: DTO Boundary
+	// DTOs must not carry JPA annotations
+	@ArchTest
+	static final ArchRule dtoBoundary = noClasses().that()
+		.resideInAPackage("..dto..")
+		.should()
+		.beAnnotatedWith("jakarta.persistence.Entity")
+		.orShould()
+		.beAnnotatedWith("jakarta.persistence.Table")
+		.as("DTOs must not carry JPA annotations");
 
-    // Rule 4: Transaction Placement
-    // @Transactional must only appear in service layer
-    @ArchTest
-    static final ArchRule transactionPlacement = methods()
-        .that().areAnnotatedWith(org.springframework.transaction.annotation.Transactional.class)
-        .should().beDeclaredInClassesThat().resideInAPackage("..service..")
-        .as("@Transactional must only appear in service layer");
+	// Rule 4: Transaction Placement
+	// @Transactional must only appear in service layer
+	@ArchTest
+	static final ArchRule transactionPlacement = methods().that()
+		.areAnnotatedWith(org.springframework.transaction.annotation.Transactional.class)
+		.should()
+		.beDeclaredInClassesThat()
+		.resideInAPackage("..service..")
+		.as("@Transactional must only appear in service layer");
 
-    // Rule 5a: Controller Naming
-    @ArchTest
-    static final ArchRule controllerNaming = classes()
-        .that().resideInAPackage("..controller..")
-        .and().areAnnotatedWith(org.springframework.web.bind.annotation.RestController.class)
-        .should().haveSimpleNameEndingWith("Controller");
+	// Rule 5a: Controller Naming
+	@ArchTest
+	static final ArchRule controllerNaming = classes().that()
+		.resideInAPackage("..controller..")
+		.and()
+		.areAnnotatedWith(org.springframework.web.bind.annotation.RestController.class)
+		.should()
+		.haveSimpleNameEndingWith("Controller");
 
-    // Rule 5b: Service Naming
-    @ArchTest
-    static final ArchRule serviceNaming = classes()
-        .that().resideInAPackage("..service..")
-        .and().areAnnotatedWith(org.springframework.stereotype.Service.class)
-        .should().haveSimpleNameEndingWith("Service")
-        .orShould().haveSimpleNameEndingWith("UseCase");
+	// Rule 5b: Service Naming
+	@ArchTest
+	static final ArchRule serviceNaming = classes().that()
+		.resideInAPackage("..service..")
+		.and()
+		.areAnnotatedWith(org.springframework.stereotype.Service.class)
+		.should()
+		.haveSimpleNameEndingWith("Service")
+		.orShould()
+		.haveSimpleNameEndingWith("UseCase");
 
-    // Rule 5c: Repository Naming
-    // Note: ArchRuleDefinition has no interfaces() static method - use
-    // classes().that()...and().areInterfaces() instead.
-    @ArchTest
-    static final ArchRule repositoryNaming = classes()
-        .that().resideInAPackage("..repository..")
-        .and().areInterfaces()
-        .should().haveSimpleNameEndingWith("Repository");
+	// Rule 5c: Repository Naming
+	// Note: ArchRuleDefinition has no interfaces() static method - use
+	// classes().that()...and().areInterfaces() instead.
+	@ArchTest
+	static final ArchRule repositoryNaming = classes().that()
+		.resideInAPackage("..repository..")
+		.and()
+		.areInterfaces()
+		.should()
+		.haveSimpleNameEndingWith("Repository");
 
-    // Rule 6: Multi-Module Package Boundary Preparation
-    // Enforces that all classes live within {{BASE_PACKAGE}} package hierarchy.
-    // When scaling to multi-module (team-dodn pattern), packages map to:
-    //   {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients, {{BASE_PACKAGE}}.storage, {{BASE_PACKAGE}}.support
-    // Migration = Gradle settings.gradle.kts include() change + move packages.
-    // NOTE: keep .as() message on a single short line. spring-java-format may
-    // collapse multi-string concatenations into one line, and Checkstyle's
-    // 120-char limit will then fail once the package name is substituted.
-    @ArchTest
-    static final ArchRule packageBoundaries = classes()
-        .should().resideInAPackage("{{BASE_PACKAGE}}..")
-        .as("All classes must reside within base package (multi-module split preparation)");
+	// Rule 6: Multi-Module Package Boundary Preparation
+	// Enforces that all classes live within {{BASE_PACKAGE}} package hierarchy.
+	// When scaling to multi-module (team-dodn pattern), packages map to:
+	// {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients, {{BASE_PACKAGE}}.storage,
+	// {{BASE_PACKAGE}}.support
+	// Migration = Gradle settings.gradle.kts include() change + move packages.
+	// NOTE: keep .as() message on a single short line. spring-java-format may
+	// collapse multi-string concatenations into one line, and Checkstyle's
+	// 120-char limit will then fail once the package name is substituted.
+	@ArchTest
+	static final ArchRule packageBoundaries = classes().should()
+		.resideInAPackage("{{BASE_PACKAGE}}..")
+		.as("All classes must reside within base package (multi-module split preparation)");
 
-    // NOTE: Rule 1 (layeredArchitecture) uses the original flat package names.
-    // Under team-dodn layout, Rule 1 becomes a silent no-op.
-    // Rules 7–10 provide actual enforcement for the new structure.
+	// NOTE: Rule 1 (layeredArchitecture) uses the original flat package names.
+	// Under team-dodn layout, Rule 1 becomes a silent no-op.
+	// Rules 7–10 provide actual enforcement for the new structure.
 
-    @ArchTest
-    static final ArchRule domain_does_not_access_storage =
-        noClasses().that().resideInAPackage("..core.domain..")
-            .should().accessClassesThat().resideInAPackage("..storage..")
-            .as("domain no storage access");
+	@ArchTest
+	static final ArchRule domain_does_not_access_storage = noClasses().that()
+		.resideInAPackage("..core.domain..")
+		.should()
+		.accessClassesThat()
+		.resideInAPackage("..storage..")
+		.as("domain no storage access");
 
-    @ArchTest
-    static final ArchRule domain_does_not_use_jpa =
-        noClasses().that().resideInAPackage("..core.domain..")
-            .should().dependOnClassesThat().resideInAPackage("jakarta.persistence..")
-            .as("domain no JPA dependency");
+	@ArchTest
+	static final ArchRule domain_does_not_use_jpa = noClasses().that()
+		.resideInAPackage("..core.domain..")
+		.should()
+		.dependOnClassesThat()
+		.resideInAPackage("jakarta.persistence..")
+		.as("domain no JPA dependency");
 
-    @ArchTest
-    static final ArchRule storage_does_not_access_clients =
-        noClasses().that().resideInAPackage("..storage..")
-            .should().accessClassesThat().resideInAPackage("..clients..")
-            .as("storage no client access");
+	@ArchTest
+	static final ArchRule storage_does_not_access_clients = noClasses().that()
+		.resideInAPackage("..storage..")
+		.should()
+		.accessClassesThat()
+		.resideInAPackage("..clients..")
+		.as("storage no client access");
 
-    @ArchTest
-    static final ArchRule clients_does_not_access_storage =
-        noClasses().that().resideInAPackage("..clients..")
-            .should().accessClassesThat().resideInAPackage("..storage..")
-            .as("client no storage access");
+	@ArchTest
+	static final ArchRule clients_does_not_access_storage = noClasses().that()
+		.resideInAPackage("..clients..")
+		.should()
+		.accessClassesThat()
+		.resideInAPackage("..storage..")
+		.as("client no storage access");
 
 }
