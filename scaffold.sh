@@ -328,9 +328,9 @@ run cp examples/archunit/archunit.properties src/test/resources/
 # ────────────────────────────────────────────────────────────────
 echo "[Stage D] Substitute placeholders"
 
-# CLAUDE.md
-substitute '{{PROJECT_NAME}}' "$PROJECT_NAME" CLAUDE.md
-substitute '{{PROJECT_ONE_LINER}}' "_(fill in your project description)_" CLAUDE.md
+# AGENTS.md
+substitute '{{PROJECT_NAME}}' "$PROJECT_NAME" AGENTS.md
+substitute '{{PROJECT_ONE_LINER}}' "_(fill in your project description)_" AGENTS.md
 
 # Build files
 substitute '{{PROJECT_NAME}}' "$PROJECT_NAME" settings.gradle.kts

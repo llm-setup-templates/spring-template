@@ -3,7 +3,7 @@ set -e
 
 TEMPLATE_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# F1 4 subfacet acceptance -- see .claude/rules/plan-review-deep.md Section 1
+# F1 4 subfacet acceptance -- see .agents/rules/plan-review-deep.md Section 1
 # Each subfacet's verification is the corresponding V/scaffold-e2e block
 # below. CI source-greps `echo "=== F1.x ...` to count 4 headers (F1.a-F1.d).
 echo "=== F1.a Reproducible Failure ==="
@@ -72,8 +72,8 @@ ALLOWLIST=(
   "examples/support/response/ResultType.java"  # same
   "examples/core/api/support/ApiControllerAdvice.java"  # {{BASE_PACKAGE}}.core.api.support + 3 imports
   "examples/application-dev.yml"               # logging.level.{{BASE_PACKAGE}} (only yml with hit, others don't)
-  # CLAUDE.md: {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}}
-  "CLAUDE.md"
+  # AGENTS.md: {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}}
+  "AGENTS.md"
   # Documentation files that show placeholders as examples/instructions
   # (template-only, removed by Stage A — never reach derived repo).
   "SETUP.md"
@@ -134,12 +134,12 @@ echo "=== spring-template required file existence check ==="
 
 REQUIRED_FILES=(
   "SETUP.md"
-  "CLAUDE.md"
+  "CLAUDE.md" "AGENTS.md"
   "README.md"
-  ".claude/rules/code-style.md"
-  ".claude/rules/architecture.md"
-  ".claude/rules/git-workflow.md"
-  ".claude/rules/verification-loop.md"
+  ".agents/rules/code-style.md"
+  ".agents/rules/architecture.md"
+  ".agents/rules/git-workflow.md"
+  ".agents/rules/verification-loop.md"
   ".claude/skills/claude-md-reviewer/SKILL.md"
   "examples/build.gradle.kts"
   "examples/settings.gradle.kts"
@@ -250,10 +250,10 @@ check_absent "V9b" "SETUP.md Prerequisites: JDK >= 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "JDK >= 21"
 check_absent "V9c" "SETUP.md Pinned Versions: Java 17 (not 21)" \
   "$TEMPLATE_DIR/SETUP.md" "Java \(Temurin\) \| 21"
-check_absent "V9d-1" "CLAUDE.md uses spring-java-format 0.0.47 (not 0.0.43)" \
-  "$TEMPLATE_DIR/CLAUDE.md" 'spring-java-format 0\.0\.43'
-check_absent "V9d-2" ".claude/rules/code-style.md uses spring-java-format 0.0.47 (not 0.0.43)" \
-  "$TEMPLATE_DIR/.claude/rules/code-style.md" 'spring-java-format 0\.0\.43'
+check_absent "V9d-1" "AGENTS.md uses spring-java-format 0.0.47 (not 0.0.43)" \
+  "$TEMPLATE_DIR/AGENTS.md" 'spring-java-format 0\.0\.43'
+check_absent "V9d-2" ".agents/rules/code-style.md uses spring-java-format 0.0.47 (not 0.0.43)" \
+  "$TEMPLATE_DIR/.agents/rules/code-style.md" 'spring-java-format 0\.0\.43'
 check_present_eq "V9e" "ArchitectureTest.java JavaDoc claims 12 rules" \
   "$(grep -c 'All 12 rules' "$TEMPLATE_DIR/examples/archunit/ArchitectureTest.java" 2>/dev/null || echo 0)" "1"
 
@@ -283,7 +283,7 @@ for f in \
   docs/architecture/decisions/README.md \
   docs/architecture/decisions/_ADR-template.md \
   docs/architecture/decisions/_RFC-template.md \
-  .claude/rules/documentation.md; do
+  .agents/rules/documentation.md; do
   if [ -f "$TEMPLATE_DIR/$f" ]; then
     pass "V11" "$f"
   else
@@ -515,7 +515,7 @@ echo "=== V_drift: 5-keyword + line count + negation + SHA256 ==="
 v_drift_failed=0
 vdrift_root="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 # Step 1+1b: extract Section 5 body + narrow to numbered 5-line checklist (CX2-2: || true)
-section5_body=$(awk '/^## 5\. Phase E entry rubric$/ { f=1; next } f && /^## 6\./ { exit } f { print }' "$vdrift_root/.claude/rules/plan-review-deep.md" 2>/dev/null | tr -d '\r' || true)
+section5_body=$(awk '/^## 5\. Phase E entry rubric$/ { f=1; next } f && /^## 6\./ { exit } f { print }' "$vdrift_root/.agents/rules/plan-review-deep.md" 2>/dev/null | tr -d '\r' || true)
 [ -n "$section5_body" ] || { echo "FAIL: V_drift Section 5 extraction failed (header missing)"; v_drift_failed=1; }
 section5_checklist=$(printf '%s\n' "$section5_body" | grep -E '^[1-5]\. (Flexibility|Universality|Convention precedence|Contract test specifications|Opt-in examples)' || true)
 section5_checklist_count=$(printf '%s\n' "$section5_checklist" | grep -c '^[1-5]\. ' || true)

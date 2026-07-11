@@ -121,13 +121,13 @@ if [[ "$(uname -s)" == Linux* || "$(uname -s)" == Darwin* ]]; then
   test ! -f scaffold.sh || { echo "FAIL: scaffold.sh not self-removed on Unix"; exit 1; }
 fi
 
-# .claude/ preserved (derived repo agent rules)
-test -d .claude/rules || { echo "FAIL: .claude/rules missing"; exit 1; }
+# .agents/rules preserved (derived repo agent rules)
+test -d .agents/rules || { echo "FAIL: .agents/rules missing"; exit 1; }
 
 # 4. Placeholder leak (CRITICAL — Reality + Runtime Contract Lens)
 # Note: *.md NOT included in general scan because SETUP.md (template-side guide
 # left in derived repo per Phase 13 Python pattern) intentionally shows
-# placeholders in its Appendix B as examples. CLAUDE.md is checked separately
+# placeholders in its Appendix B as examples. AGENTS.md is checked separately
 # in Step 8 below for {{PROJECT_NAME}} + {{PROJECT_ONE_LINER}} specifically.
 LEAKS=$(grep -rE '\{\{[A-Z_]+\}\}' . --include="*.java" --include="*.kts" --include="*.yml" --include="*.json" --include="*.xml" 2>/dev/null || true)
 if [ -n "$LEAKS" ]; then
@@ -174,14 +174,14 @@ case "$DOC_MODULES" in
     ;;
 esac
 
-# 8. CLAUDE.md PROJECT_NAME + PROJECT_ONE_LINER substitution
-grep -q '^# e2e-test' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md PROJECT_NAME not substituted"; exit 1; }
-! grep -q '{{PROJECT_NAME}}' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md {{PROJECT_NAME}} placeholder leak"; exit 1; }
+# 8. AGENTS.md PROJECT_NAME + PROJECT_ONE_LINER substitution
+grep -q '^# e2e-test' AGENTS.md \
+  || { echo "FAIL: AGENTS.md PROJECT_NAME not substituted"; exit 1; }
+! grep -q '{{PROJECT_NAME}}' AGENTS.md \
+  || { echo "FAIL: AGENTS.md {{PROJECT_NAME}} placeholder leak"; exit 1; }
 # Round 3 R3-5: PROJECT_ONE_LINER substituted
-! grep -q '{{PROJECT_ONE_LINER}}' CLAUDE.md \
-  || { echo "FAIL: CLAUDE.md PROJECT_ONE_LINER not substituted"; exit 1; }
+! grep -q '{{PROJECT_ONE_LINER}}' AGENTS.md \
+  || { echo "FAIL: AGENTS.md PROJECT_ONE_LINER not substituted"; exit 1; }
 
 echo "[e2e] structural checks PASS"
 

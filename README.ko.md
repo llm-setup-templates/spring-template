@@ -98,10 +98,10 @@ Spring Boot 프로젝트를 시작하는 방법은 수십 가지입니다. 이 �
 ## 내부 구성
 
 - 세팅 흐름: [SETUP.md](./SETUP.md)
-- AI 에이전트 규칙: [CLAUDE.md](./CLAUDE.md)
-- 아키텍처 (레이어 규칙, ArchUnit): [.claude/rules/architecture.md](./.claude/rules/architecture.md)
-- 검증 루프 (Gradle 태스크 순서): [.claude/rules/verification-loop.md](./.claude/rules/verification-loop.md)
-- 테스트 수정 규칙: [.claude/rules/test-modification.md](./.claude/rules/test-modification.md)
+- AI 에이전트 규칙: [AGENTS.md](./AGENTS.md) (Claude Code는 CLAUDE.md import 껍데기로 로드)
+- 아키텍처 (레이어 규칙, ArchUnit): [.agents/rules/architecture.md](./.agents/rules/architecture.md)
+- 검증 루프 (Gradle 태스크 순서): [.agents/rules/verification-loop.md](./.agents/rules/verification-loop.md)
+- 테스트 수정 규칙: [.agents/rules/test-modification.md](./.agents/rules/test-modification.md)
 - 바로 복사해서 쓸 수 있는 설정 파일: [examples/](./examples/)
 
 ---

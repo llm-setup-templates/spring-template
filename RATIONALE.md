@@ -1,6 +1,6 @@
 # RATIONALE — Spring Template Design Notes
 
-> Out-of-band design rationale that doesn't fit in CLAUDE.md (LLM agent rules)
+> Out-of-band design rationale that doesn't fit in AGENTS.md (LLM agent rules)
 > or SETUP.md (user-facing how-to). Captures the "why" behind non-obvious
 > decisions so future maintainers don't relitigate them.
 

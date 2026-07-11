@@ -75,7 +75,7 @@ docs/
   ADR-NNN`. See `architecture/decisions/README.md`
 - **RTM is updated in the same PR as the code** that implements or
   changes an FR
-- **`.claude/rules/documentation.md` is the source of truth** for the
+- **`.agents/rules/documentation.md` is the source of truth** for the
   naming conventions and ADR lifecycle. If this README drifts from
   that file, trust the rules file
 

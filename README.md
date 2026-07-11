@@ -103,10 +103,10 @@ the extracted module.
 ## What's inside
 
 - Setup flow: [SETUP.md](./SETUP.md)
-- AI agent rules: [CLAUDE.md](./CLAUDE.md)
-- Architecture (layer rules, ArchUnit): [.claude/rules/architecture.md](./.claude/rules/architecture.md)
-- Verification loop (Gradle task sequence): [.claude/rules/verification-loop.md](./.claude/rules/verification-loop.md)
-- Test modification rules: [.claude/rules/test-modification.md](./.claude/rules/test-modification.md)
+- AI agent rules: [AGENTS.md](./AGENTS.md) (Claude Code loads it via the CLAUDE.md import shell)
+- Architecture (layer rules, ArchUnit): [.agents/rules/architecture.md](./.agents/rules/architecture.md)
+- Verification loop (Gradle task sequence): [.agents/rules/verification-loop.md](./.agents/rules/verification-loop.md)
+- Test modification rules: [.agents/rules/test-modification.md](./.agents/rules/test-modification.md)
 - Ready-to-copy config files: [examples/](./examples/)
 
 ---
@@ -115,7 +115,7 @@ the extracted module.
 
 Skills are Claude Code agent prompts in `.claude/skills/`. Each skill is invoked with `/skill-name`.
 
-- **`claude-md-reviewer`** (`.claude/skills/claude-md-reviewer/`) — Reviews CLAUDE.md for completeness and consistency.
+- **`claude-md-reviewer`** (`.claude/skills/claude-md-reviewer/`) — Reviews the AGENTS.md rules body (and its CLAUDE.md import shell) for completeness and consistency.
 - **`tdd`** (`.claude/skills/tdd/`) — Test-driven development with red-green-refactor.
   Vendored verbatim from mattpocock/skills (MIT). See `UPSTREAM.md` + `_local-addendum.md`.
 - **`office-hours-ddd-discovery`** (`.claude/skills/office-hours-ddd-discovery/`) —

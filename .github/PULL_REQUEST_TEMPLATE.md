@@ -1,6 +1,6 @@
 <!--
 SAFE_OP 마커 블록과 ## Done 섹션은 자동 검증 대상입니다 (`.github/workflows/pr-meta-check.yml`).
-삭제·마커 변경 시 PR 차단. 자세한 4 Behavior Gates: `.claude/rules/llm-behavior-gates.md`.
+삭제·마커 변경 시 PR 차단. 자세한 4 Behavior Gates: `.agents/rules/llm-behavior-gates.md`.
 -->
 
 <!-- SAFE_OP_START -->
@@ -30,7 +30,7 @@ Out-of-scope: [의도적 미변경 영역]
 - [ ] Gate 3 — Surgical Diff (변경 라인 모두 요청 추적, 명문 예외 외 인접 코드 개선 없음)
 - [ ] Gate 4 — Minimum Code (단일 사용처 추상화·요청 외 유연성 없음)
 
-> 실행/검증 (테스트·CI green·재현·E2E)은 F1.a-d (`.claude/rules/plan-review-deep.md` §1)로 위임. 본 점검은 PR-level 입력 계약만.
+> 실행/검증 (테스트·CI green·재현·E2E)은 F1.a-d (`.agents/rules/plan-review-deep.md` §1)로 위임. 본 점검은 PR-level 입력 계약만.
 
 ---
 
@@ -83,7 +83,7 @@ Out-of-scope: [의도적 미변경 영역]
 - [ ] `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar`
       passes locally
 - [ ] Tests updated in the same commit as the code change
-      (see `.claude/rules/test-modification.md`)
+      (see `.agents/rules/test-modification.md`)
 - [ ] If adding / changing a JPA entity, a Testcontainers integration
       test exercises the schema (not only H2 in-memory)
 

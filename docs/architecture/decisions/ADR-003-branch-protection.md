@@ -50,7 +50,7 @@ This template's `CRITIQUE.md` 🟡 PROCEED-WITH-CONDITIONS verdict (Necessity WE
 Phase 14a `CRITIQUE.md` (deep-feature-critique 🟡 PROCEED-WITH-CONDITIONS, 2026-05-01) flagged three concerns this ADR addresses:
 
 - **Bus factor 1** (Critical): solo maintainer (@gs07103). Self-approval is structurally unsound -- a single mistake has no second-pair-of-eyes recourse. Mitigated by the 24h cooling period and the 6-month review schedule above.
-- **Necessity WEAK**: external references (Thoughtworks TDD, SDD Wikipedia, Cookiecutter hooks -- see `.claude/rules/plan-review-deep.md` Section 6) ground the rationale, but the Phase's actual user adoption is unknown until 2026-11-01. The Revision trigger above provides the kill / pivot / proceed gate.
+- **Necessity WEAK**: external references (Thoughtworks TDD, SDD Wikipedia, Cookiecutter hooks -- see `.agents/rules/plan-review-deep.md` Section 6) ground the rationale, but the Phase's actual user adoption is unknown until 2026-11-01. The Revision trigger above provides the kill / pivot / proceed gate.
 - **Usage UNKNOWN**: no LLM agent has yet forked or cloned the template at Phase 14a merge time. The 6-month review checks this signal.
 
 ## Consequences
@@ -68,6 +68,6 @@ Negative:
 
 ## References
 
-- `.claude/rules/plan-review-deep.md` Section 6 (external references: Thoughtworks TDD, SDD Wikipedia, Cookiecutter hooks).
+- `.agents/rules/plan-review-deep.md` Section 6 (external references: Thoughtworks TDD, SDD Wikipedia, Cookiecutter hooks).
 - Phase 14a `CRITIQUE.md` (Necessity / Bus factor / Revision trigger).
 - Phase 14a `PLAN.md` rev.7 §"Preconditions" items 2 and 3.

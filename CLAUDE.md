@@ -1,55 +1,14 @@
-# {{PROJECT_NAME}}
+# Claude Code entrypoint
 
-> Generated from llm-setup-prompts/spring-template.
+Read AGENTS.md for all project rules. This file only wires imports so Claude Code
+loads the same canonical body that Codex CLI reads directly from AGENTS.md.
 
-## Project Overview
-{{PROJECT_ONE_LINER}}
-
-## Tech Stack
-- Language: Java 17 (LTS / Temurin) — auto-provisioned by Gradle toolchain (Foojay resolver) so host JDK version does not matter
-- Package Manager: Gradle (Kotlin DSL 8.x)
-- Formatter: spring-java-format 0.0.47
-- Linter: Checkstyle 10.17.0 (Google Java Style) + SpotBugs 4.8.6
-- Type Checker: javac (via ./gradlew compileJava — integrated in build)
-- Test Runner: JUnit 5 + AssertJ + Mockito + Testcontainers
-- CI: GitHub Actions
-- PR Review: CodeRabbit
-
-## Primary Commands
-- Install deps: `./gradlew dependencies`
-- Format check: `./gradlew format` (auto-fix) / `./gradlew checkFormat` (check only)
-- Lint: `./gradlew checkstyleMain checkstyleTest`
-- Type check: `./gradlew compileJava compileTestJava`
-- Test: `./gradlew test`
-- Build: `./gradlew build bootJar`
-- Full verify: `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build`
-
-## Architecture Summary
-See `.claude/rules/architecture.md` for full rules.
-This project uses a layered Spring Boot architecture with **team-dodn package naming** for future multi-module migration. Packages: `core.api` (controllers), `core.domain` (business logic), `storage.db` (JPA persistence), `clients` (external APIs), `support` (cross-cutting: error handling, logging). All API responses are wrapped in `ApiResponse<T>` with standardized `ErrorCode` enums. Global exception handling via `@ControllerAdvice` converts `CoreException` to `ApiResponse`. ArchUnit enforces the boundary rules at test time (the rule count lives in `ArchitectureTest.java` only). See `.claude/rules/architecture.md` for full rules.
-
-## Verification Rules
-After any code change, run the full verification loop.
-Never declare a task complete until it passes.
-See `.claude/rules/verification-loop.md`.
-
-## Test Modification
-
-When modifying code, always update tests in the same commit. Determine affected test layers:
-
-- **Endpoint/service added** → create unit test (`@Mock`) + integration test (`@WebMvcTest` or `@SpringBootTest`)
-- **Signature/schema changed** → update existing assertions and mocks
-- **Logic modified** → update assertions, add edge cases
-- **Dependency bumped** → run full `./gradlew test`, check for API changes
-- **Refactoring only** → do NOT touch tests; if they break, the refactoring is wrong
-- **ArchUnit fails** → fix the code, never the rule
-
-Full rules and checklist: `.claude/rules/test-modification.md`
-
-## Git Workflow
-- Never commit directly to `main`
-- Conventional Commits required
-- See `.claude/rules/git-workflow.md`
-
-## Business / Domain Terms
-N/A — add project-specific terms here as the codebase evolves.
+@AGENTS.md
+@.agents/rules/architecture.md
+@.agents/rules/code-style.md
+@.agents/rules/documentation.md
+@.agents/rules/git-workflow.md
+@.agents/rules/llm-behavior-gates.md
+@.agents/rules/plan-review-deep.md
+@.agents/rules/test-modification.md
+@.agents/rules/verification-loop.md

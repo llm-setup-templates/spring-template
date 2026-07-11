@@ -23,13 +23,13 @@ flowchart LR
 | `BASE_PACKAGE` | scaffold param | required | medium |
 | `PROJECT_NAME` | scaffold param | required | low |
 | `.github/workflows/validate.yml` | CI workflow | committed | medium |
-| `.claude/rules/plan-review-deep.md` | governance | byte-identical 3 templates | high |
+| `.agents/rules/plan-review-deep.md` | governance | byte-identical 3 templates | high |
 
 ### Adding a new archetype
 Add a directory under `examples/` and update `scaffold.sh` archetype dispatch + the archetypes subgraph above. Phase 14b is the canonical Phase for archetype expansion.
 
 ### Adding a new verify step
-Add a new `=== V<N> <name> ===` block to `validate.sh` AFTER V0a/V0e/V_seed and BEFORE V1+. Update F1 echo headers if the step exposes a new failure surface. See `.claude/rules/plan-review-deep.md` Section 2.
+Add a new `=== V<N> <name> ===` block to `validate.sh` AFTER V0a/V0e/V_seed and BEFORE V1+. Update F1 echo headers if the step exposes a new failure surface. See `.agents/rules/plan-review-deep.md` Section 2.
 
 ### Adding a new env dependency
 Add a row to the ENV table above and rate its blast radius (low/medium/high). If required for `validate.sh` to run, add a presence guard at the top of `validate.sh`.
@@ -92,7 +92,7 @@ Optional:
 | A | Remove template-only files (`validate.sh`, `.github/workflows/validate.yml`, template dependabot configs, `RATIONALE.md`, `CODERABBIT-PROMPT-GUIDE.md`, `test/`, ADR-002). Keeps `.claude/` (agent rules) + `examples/` (used by Stage C). |
 | B | Single archetype (web-mvc) — no archetype selection (vs Python's 3-archetype split, see [RATIONALE § archetype](./RATIONALE.md)). |
 | C | Copy Initializr seed (`examples/initializr-seed/`) + template-specific assets to repo root. `logback-spring.xml` lands at `src/main/resources/logback-spring.xml` (root level — Spring Boot's auto-load path). |
-| D | Substitute placeholders: `{{PROJECT_NAME}}` (CLAUDE.md, settings.gradle.kts, aws/), `{{PROJECT_ONE_LINER}}` (CLAUDE.md), `{{BASE_PACKAGE}}` (all `src/**/*.{java,yml,xml}`), 9 AWS dummy ARNs (aws/task-definition.json). Migrates Initializr seed `com.example.template` → `$BASE_PACKAGE` directory + package declarations. |
+| D | Substitute placeholders: `{{PROJECT_NAME}}` (AGENTS.md, settings.gradle.kts, aws/), `{{PROJECT_ONE_LINER}}` (AGENTS.md), `{{BASE_PACKAGE}}` (all `src/**/*.{java,yml,xml}`), 9 AWS dummy ARNs (aws/task-definition.json). Migrates Initializr seed `com.example.template` → `$BASE_PACKAGE` directory + package declarations. |
 | E | Trim unselected doc modules (`docs/reports/`, `docs/briefings/`, or `docs/architecture/{containers,DFD}.md` + `docs/data/`). |
 | F | Remove `examples/` + Initializr's default `application.properties` (conflicts with template's `application.yml`). |
 | G | `rm -rf .git && git init -b main` (fresh history — template history not inherited). |
@@ -237,8 +237,8 @@ All `{{...}}` placeholders below are filled by `scaffold.sh` Stage D:
 
 | Placeholder | Scope | Filled by | Example |
 |---|---|---|---|
-| `{{PROJECT_NAME}}` | CLAUDE.md, settings.gradle.kts, aws/task-definition.json | scaffold.sh Stage D | `my-spring-app` |
-| `{{PROJECT_ONE_LINER}}` | CLAUDE.md | scaffold.sh Stage D (default value) | `_(fill in your project description)_` |
+| `{{PROJECT_NAME}}` | AGENTS.md, settings.gradle.kts, aws/task-definition.json | scaffold.sh Stage D | `my-spring-app` |
+| `{{PROJECT_ONE_LINER}}` | AGENTS.md | scaffold.sh Stage D (default value) | `_(fill in your project description)_` |
 | `{{BASE_PACKAGE}}` | ArchitectureTest.java (3 places: package + @AnalyzeClasses + Rule 6 + JavaDoc), AppProperties.java, support/error/*, support/response/*, core/api/support/* | scaffold.sh Stage D `find src` sed | `com.example.myspringapp` |
 
 `PROJECT_NAME_LOWER` (hyphen-stripped) and `BASE_PACKAGE_PATH` (dot→slash) are
