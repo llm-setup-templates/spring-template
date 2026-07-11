@@ -3,7 +3,8 @@
 #
 # Copies the template to a temp dir (portable cp -a, no rsync), runs
 # scaffold.sh with the given doc-modules combo, then verifies post-conditions.
-# When Gradle is available, runs ./gradlew compileJava compileTestJava test
+# When Gradle is available, runs the generated ci.yml verify chain
+# (checkFormat checkstyle spotbugs test build bootJar)
 # to guard against scaffolded-output regressions.
 #
 # 5 doc-modules combos covered by .github/workflows/validate.yml matrix:
@@ -193,9 +194,13 @@ echo "[e2e] structural checks PASS"
 # 9. Gradle lifecycle (most important verification — only if Gradle available)
 # Skipped on environments without JDK/Gradle (e.g., minimal CI smoke test).
 if [ -x "./gradlew" ]; then
-  echo "[e2e] running ./gradlew compileJava compileTestJava test --no-daemon..."
-  ./gradlew compileJava compileTestJava test --no-daemon
-  echo "[e2e] gradle lifecycle PASS"
+  # Mirror the generated project's ci.yml verify chain (checkFormat first) so
+  # scaffolded-output format/lint/analysis defects are caught here, not only in
+  # a consumer's CI. Previously this ran only compileJava/test, which let
+  # spring-java-format violations in examples/ ship undetected.
+  echo "[e2e] running ./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar --no-daemon..."
+  ./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar --no-daemon
+  echo "[e2e] gradle verify chain PASS"
 else
   echo "[e2e] gradlew not executable — skipping Gradle lifecycle (verify in CI)"
 fi
