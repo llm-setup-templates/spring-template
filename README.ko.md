@@ -25,7 +25,7 @@ Spring Boot 프로젝트를 시작하는 방법은 수십 가지입니다. 이 �
 | 응답 봉투 | `ApiResponse<T>` 래퍼, `CoreException` 계층 | raw 엔티티 반환은 JPA 상태를 클라이언트에 노출; 서비스 레이어의 `ResponseStatusException`은 레이어 분리 위반 |
 | 포매터 | spring-java-format 0.0.47 (공백 소유권) | Checkstyle과 Prettier 스타일 포매팅이 충돌하면 낭비 |
 | 린터 | Checkstyle 10.17 (Google Java Style 기반) + SpotBugs 4.8.6 | 스타일 하나, 버그 패턴 하나 |
-| 경계 테스트 | ArchUnit (레이어 규칙 10개) | 컴파일 타임이 잡지 못하는 반사 기반 검사 |
+| 경계 테스트 | ArchUnit (레이어 규칙 12개) | 컴파일 타임이 잡지 못하는 반사 기반 검사 |
 | CI 커밋 게이트 | wagoid/commitlint-github-action@v6 | JVM 템플릿은 Husky를 이식성 있게 쓸 수 없음 — CI 수준 게이트 |
 
 ---
@@ -102,6 +102,7 @@ Spring Boot 프로젝트를 시작하는 방법은 수십 가지입니다. 이 �
 - 아키텍처 (레이어 규칙, ArchUnit): [.agents/rules/architecture.md](./.agents/rules/architecture.md)
 - 검증 루프 (Gradle 태스크 순서): [.agents/rules/verification-loop.md](./.agents/rules/verification-loop.md)
 - 테스트 수정 규칙: [.agents/rules/test-modification.md](./.agents/rules/test-modification.md)
+- 요구사항 추적: [docs/requirements/RTM.md](./docs/requirements/RTM.md) — `validate.sh`의 `scripts/rtm-lint.sh`와 생성 프로젝트의 `.github/workflows/rtm.yml`이 검사
 - 바로 복사해서 쓸 수 있는 설정 파일: [examples/](./examples/)
 
 ---
@@ -115,4 +116,4 @@ Spring Boot 프로젝트를 시작하는 방법은 수십 가지입니다. 이 �
 
 ## 라이선스
 
-Apache-2.0
+MIT — [LICENSE](./LICENSE) 참조.

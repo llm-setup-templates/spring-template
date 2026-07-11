@@ -107,6 +107,7 @@ the extracted module.
 - Architecture (layer rules, ArchUnit): [.agents/rules/architecture.md](./.agents/rules/architecture.md)
 - Verification loop (Gradle task sequence): [.agents/rules/verification-loop.md](./.agents/rules/verification-loop.md)
 - Test modification rules: [.agents/rules/test-modification.md](./.agents/rules/test-modification.md)
+- Requirements traceability: [docs/requirements/RTM.md](./docs/requirements/RTM.md) — linted by `scripts/rtm-lint.sh` in `validate.sh` and, in generated projects, by `.github/workflows/rtm.yml`
 - Ready-to-copy config files: [examples/](./examples/)
 
 ---
@@ -133,4 +134,4 @@ Skills are Claude Code agent prompts in `.claude/skills/`. Each skill is invoked
 
 ## License
 
-Apache-2.0
+MIT — see [LICENSE](./LICENSE).

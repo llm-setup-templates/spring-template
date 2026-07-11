@@ -24,11 +24,10 @@ Use `git reset --soft HEAD~N` locally before the first push if commits
 need rewriting.
 
 ## Pre-Push Gate (MANDATORY)
-Before `git push` on any branch, run the inline Git Safety Gate bash block
-from **SETUP.md § Phase 8.1**. The gate checks:
+Before `git push` on any branch, verify all three:
 - Current branch is not `main`
 - Last 10 commit messages match the Conventional Commits regex
 - No uncommitted changes in working tree
 
-The gate is embedded directly in SETUP.md (not a separate script file) so
-that the LLM agent can execute it inline without extra file lookups.
+The CI commitlint job enforces the Conventional Commits rule; the branch
+and clean-tree checks are the agent's responsibility before pushing.
