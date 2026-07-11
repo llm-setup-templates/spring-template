@@ -1,7 +1,12 @@
 #!/bin/bash
 # rtm-lint — RTM(docs/requirements/RTM.md) 무결성 검사
-# validate.sh의 V_rtm 절이 호출한다. 단독 실행: bash scripts/rtm-lint.sh <repo-root> [rtm-file]
-# 이 검사는 템플릿 저작 검증 층이다(생성 프로젝트에는 포함되지 않음 — scaffold가 validate.sh를 제거하는 것은 설계).
+# 두 진입점이 이 한 파일을 호출한다: 템플릿은 validate.sh의 V_rtm 절, 소비자는
+# .github/workflows/rtm.yml. 단독 실행: bash scripts/rtm-lint.sh <repo-root> [rtm-file]
+# 이 파일과 .github/workflows/rtm.yml은 생성 프로젝트에 vendored(복제 상속)된다.
+# (1) 안 쓰려면: 이 파일과 .github/workflows/rtm.yml을 지운다.
+# (2) FR/NFR 행이 0건이면 통과한다(NOTE 1줄 후 exit 0).
+# (3) 검사/미검사 항목은 아래 "검사하는 것"/"검사하지 않는 것" 목록 참조.
+# (4) 출처: vendored from llm-setup-templates. 상류 수정은 자동 전파되지 않는다.
 #
 # 열 인식: 헤더 행(필수 열 FR ID/Summary/Component(s)/Test(s)/Status를 전부 가진 첫 표 행)에서
 #   열 이름으로 인덱스를 찾는다(헤더 구동). "FR ID"만 보면 문서 상단의 안내 표가 가로챈다.
@@ -41,7 +46,8 @@
 #   - 이중 백틱(``...``) 코드 스팬 — 단일 백틱만 파싱
 #   - 헤더 열 이름 변경(예: Component(s)를 Components로) — 필수 열을 전부 가진 표 행이
 #     없으면 VIOLATION rtm-header-not-found로 실패한다(exit 1). 조용히 꺼지지 않는다.
-#     검사를 끄려면 validate.sh의 V_rtm 호출 줄을 지운다(RTM.md 파일 자체가 없으면 SKIP exit 0)
+#     검사를 끄려면: (템플릿) validate.sh의 V_rtm 호출 줄, (소비자) .github/workflows/rtm.yml을 지운다.
+#     RTM.md 파일 자체가 없으면 SKIP exit 0
 #   - FR/NFR 행을 여러 표에 나눠 두는 것 — 헤더 표 밖의 행은 row-outside-table 위반이다.
 #     FR/NFR 행은 한 표에 모아라(NFR 통합 스키마가 그 전제다)
 #   - 헤더 열 이름의 서식(볼드, 백틱) 또는 선두 파이프 생략 — 정확 일치만 인정한다

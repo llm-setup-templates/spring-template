@@ -1,0 +1,16 @@
+# RTM integrity check -- vendored from llm-setup-templates.
+# This workflow and scripts/rtm-lint.sh are your project's copy. To stop
+# checking the RTM, delete this file and scripts/rtm-lint.sh. Upstream fixes
+# do NOT auto-propagate. With zero FR/NFR rows the check passes silently.
+name: RTM
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  rtm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/rtm-lint.sh .
