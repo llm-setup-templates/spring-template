@@ -113,10 +113,9 @@ public class ArchitectureTest {
 		.haveSimpleNameEndingWith("Repository");
 
 	// Rule 6: Multi-Module Package Boundary Preparation
-	// Enforces that all classes live within {{BASE_PACKAGE}} package hierarchy.
-	// When scaling to multi-module (team-dodn pattern), packages map to:
-	// {{BASE_PACKAGE}}.core, {{BASE_PACKAGE}}.clients, {{BASE_PACKAGE}}.storage,
-	// {{BASE_PACKAGE}}.support
+	// Enforces that all classes live within the project's base package.
+	// When scaling to multi-module (team-dodn pattern), the core, clients,
+	// storage, and support sub-packages map to modules.
 	// Migration = Gradle settings.gradle.kts include() change + move packages.
 	// NOTE: keep .as() message on a single short line. spring-java-format may
 	// collapse multi-string concatenations into one line, and Checkstyle's
