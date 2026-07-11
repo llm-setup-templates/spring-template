@@ -69,13 +69,17 @@ test -f "src/main/java/com/example/e2etest/support/response/ApiResponse.java" \
   || { echo "FAIL: ApiResponse.java missing — Round 2 CX-3 regression"; exit 1; }
 test -f "src/main/java/com/example/e2etest/support/response/ResultType.java" \
   || { echo "FAIL: ResultType.java missing"; exit 1; }
-# Round 2 CX-2/I-3: ArchitectureTest @AnalyzeClasses + Rule 6 substituted
-grep -q '@AnalyzeClasses(packages = "com.example.e2etest"' \
+# Round 2 CX-2/I-3: BASE_PACKAGE substituted into the constant; @AnalyzeClasses and
+# Rule 6 reference that constant (keeps the package name off the length-sensitive lines).
+grep -q 'static final String BASE_PACKAGE = "com.example.e2etest";' \
   "src/test/java/com/example/e2etest/architecture/ArchitectureTest.java" \
-  || { echo "FAIL: ArchitectureTest @AnalyzeClasses still uses raw com.example"; exit 1; }
-grep -q '\.resideInAPackage("com.example.e2etest..")' \
+  || { echo "FAIL: ArchitectureTest BASE_PACKAGE constant not substituted"; exit 1; }
+grep -q '@AnalyzeClasses(packages = ArchitectureTest.BASE_PACKAGE,' \
   "src/test/java/com/example/e2etest/architecture/ArchitectureTest.java" \
-  || { echo "FAIL: ArchitectureTest Rule 6 still uses raw com.example"; exit 1; }
+  || { echo "FAIL: ArchitectureTest @AnalyzeClasses not referencing BASE_PACKAGE constant"; exit 1; }
+grep -q '\.resideInAPackage(BASE_PACKAGE + "\.\.")' \
+  "src/test/java/com/example/e2etest/architecture/ArchitectureTest.java" \
+  || { echo "FAIL: ArchitectureTest Rule 6 not referencing BASE_PACKAGE constant"; exit 1; }
 # Round 2 CX-9: logback-spring.xml at root (NOT in sub-dir)
 test -f src/main/resources/logback-spring.xml \
   || { echo "FAIL: logback-spring.xml not at root — Spring Boot auto-load fails"; exit 1; }

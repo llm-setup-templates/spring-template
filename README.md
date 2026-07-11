@@ -8,7 +8,7 @@
 > mid-setup.
 
 **Empirically verified**: SETUP.md alone drives Claude Code → green CI in under 3 min
-([proof run](https://github.com/KWONSEOK02/llm-setup-e2e17-spring/actions/runs/24565850331), 2m53s).
+(measured at ~2m53s on a throwaway scaffold; the temporary proof repo has since been deleted).
 
 ---
 
@@ -128,7 +128,7 @@ Skills are Claude Code agent prompts in `.claude/skills/`. Each skill is invoked
 ## Related templates
 
 - [python-template](https://github.com/llm-setup-templates/python-template) — Python 3.13 + 3 archetypes
-- [typescript-template](https://github.com/llm-setup-templates/typescript-template) — Next.js 15 + FSD 5 layers
+- [typescript-template](https://github.com/llm-setup-templates/typescript-template) — Next.js 16 + FSD 5 layers
 
 ---
 

@@ -1,6 +1,6 @@
 # {{PROJECT_NAME}}
 
-> Generated from llm-setup-prompts/spring-template.
+> Generated from llm-setup-templates/spring-template.
 > Canonical rules body for all agents (Claude Code loads this via CLAUDE.md imports; Codex CLI loads it directly).
 
 ## 1. Project Overview
@@ -23,7 +23,7 @@
 - Type check: `./gradlew compileJava compileTestJava`
 - Test: `./gradlew test`
 - Build: `./gradlew build bootJar`
-- Full verify: `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build`
+- Full verify: `./gradlew checkFormat checkstyleMain checkstyleTest spotbugsMain test build bootJar`
 
 ## 4. Architecture Summary
 See `.agents/rules/architecture.md` for full rules.

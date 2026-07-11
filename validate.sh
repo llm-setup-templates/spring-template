@@ -62,7 +62,7 @@ ALLOWLIST=(
   # Original (pre-Phase-13b)
   "examples/aws/task-definition.json"          # 9 AWS placeholders — runtime user input
   "examples/settings.gradle.kts"               # {{PROJECT_NAME}}
-  "examples/archunit/ArchitectureTest.java"    # {{BASE_PACKAGE}} 3 places (package + @AnalyzeClasses + Rule 6)
+  "examples/archunit/ArchitectureTest.java"    # {{BASE_PACKAGE}} 2 places (package decl + BASE_PACKAGE constant; annotation/Rule 6 reference the constant)
   # Phase 13b T11: BASE_PACKAGE placeholder introduced
   "examples/config/AppProperties.java"         # {{BASE_PACKAGE}}.config
   "examples/support/error/CoreException.java"  # {{BASE_PACKAGE}}.support.error

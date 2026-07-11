@@ -28,8 +28,13 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  * rules pass on a day-0 skeleton before any controllers/services exist. Remove those once
  * real classes land if you prefer strict enforcement.
  */
-@AnalyzeClasses(packages = "{{BASE_PACKAGE}}", importOptions = { ImportOption.DoNotIncludeTests.class })
+@AnalyzeClasses(packages = ArchitectureTest.BASE_PACKAGE, importOptions = { ImportOption.DoNotIncludeTests.class })
 public class ArchitectureTest {
+
+	// Base package as a constant so the substituted package name never lands on the
+	// @AnalyzeClasses or resideInAPackage lines - keeps those lines a fixed length
+	// regardless of how long the real package name is (Checkstyle 120-char limit).
+	static final String BASE_PACKAGE = "{{BASE_PACKAGE}}";
 
 	// Rule 1: Layered Architecture
 	// Controller -> Service -> Repository (unidirectional only)
@@ -119,10 +124,11 @@ public class ArchitectureTest {
 	// Migration = Gradle settings.gradle.kts include() change + move packages.
 	// NOTE: keep .as() message on a single short line. spring-java-format may
 	// collapse multi-string concatenations into one line, and Checkstyle's
-	// 120-char limit will then fail once the package name is substituted.
+	// 120-char limit will then fail. The package name itself lives in the
+	// BASE_PACKAGE constant (above), so it never lands on these lines.
 	@ArchTest
 	static final ArchRule packageBoundaries = classes().should()
-		.resideInAPackage("{{BASE_PACKAGE}}..")
+		.resideInAPackage(BASE_PACKAGE + "..")
 		.as("All classes must reside within base package (multi-module split preparation)");
 
 	// NOTE: Rule 1 (layeredArchitecture) uses the original flat package names.

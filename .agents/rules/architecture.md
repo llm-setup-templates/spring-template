@@ -56,7 +56,7 @@ core.domain →✗ storage.*  (no direct import, use interfaces)
 
 ### 1. Global Response Envelope
 - NEVER return raw entities or `Map<String,Object>` from @RestController methods.
-- ALWAYS wrap in `ApiResponse<T>` (see `examples/support/response/ApiResponse.java`).
+- ALWAYS wrap in `ApiResponse<T>` (see `support/response/ApiResponse.java` under your base package).
 - NEVER throw Spring's `ResponseStatusException` in service/domain layers.
   Use `CoreException(ErrorType.xxx)` only. `ApiControllerAdvice` converts it to `ApiResponse`.
 
