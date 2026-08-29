@@ -45,7 +45,7 @@ jobs:
           java-version: '17'
 
       - name: Set up Gradle (cached)
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Run scaffold-e2e for doc-modules=${{ matrix.doc-modules }}
         run: bash test/scaffold-e2e.sh "${{ matrix.doc-modules }}"
@@ -65,7 +65,7 @@ jobs:
           java-version: '17'
 
       - name: Set up Gradle (cached)
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Build + test archetype-ddd-pilot (Testcontainers Postgres)
         working-directory: examples/archetype-ddd-pilot
